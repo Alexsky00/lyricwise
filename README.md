@@ -1,2 +1,2 @@
 # lyricwise
-Learn English through music
+Learn English through music 🎵
