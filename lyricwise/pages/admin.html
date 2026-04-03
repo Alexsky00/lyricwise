@@ -14,104 +14,147 @@
   <div class="admin-header">
     <div>
       <h1>⚙ Admin</h1>
-      <p>Generate quiz questions for a new song using AI</p>
+      <p>Manage songs, generate and edit quizzes</p>
     </div>
     <span class="admin-badge">Prototype version</span>
   </div>
 
-  <!-- STEP 1: Song info -->
-  <div class="admin-section">
-    <h2>① Song information</h2>
-    <div class="admin-grid">
-      <div class="admin-field">
-        <label>Title</label>
-        <input type="text" id="adm-title" placeholder="e.g. Let Her Go"/>
-      </div>
-      <div class="admin-field">
-        <label>Artist</label>
-        <input type="text" id="adm-artist" placeholder="e.g. Passenger"/>
-      </div>
-      <div class="admin-field">
-        <label>YouTube ID <span class="field-hint">(11 chars after watch?v=)</span></label>
-        <input type="text" id="adm-yt" placeholder="e.g. K4DyBUG242c" maxlength="11"/>
-      </div>
-      <div class="admin-field">
-        <label>Spotify ID <span class="field-hint">(after /track/)</span></label>
-        <input type="text" id="adm-sp" placeholder="e.g. 2uZWffKoemZDI0gHcBEcDc"/>
-      </div>
-    </div>
+  <!-- Tab navigation -->
+  <div class="admin-tab-nav">
+    <button class="admin-tab-btn active" data-panel="panel-add">✨ Add Song</button>
+    <button class="admin-tab-btn"        data-panel="panel-edit">✏️ Edit Quiz</button>
   </div>
 
-  <!-- STEP 2: Icon -->
-  <div class="admin-section">
-    <h2>② Song icon</h2>
-    <div class="icon-picker" id="icon-picker">
-      <div class="icon-opt selected" data-icon="🎵">🎵</div>
-      <div class="icon-opt" data-icon="🎸">🎸</div>
-      <div class="icon-opt" data-icon="🎹">🎹</div>
-      <div class="icon-opt" data-icon="🎧">🎧</div>
-      <div class="icon-opt" data-icon="🎤">🎤</div>
-      <div class="icon-opt" data-icon="🎷">🎷</div>
-      <div class="icon-opt" data-icon="🎺">🎺</div>
-      <div class="icon-opt" data-icon="🎻">🎻</div>
-      <div class="icon-opt" data-icon="🥁">🥁</div>
-      <div class="icon-opt" data-icon="🪗">🪗</div>
-      <div class="icon-opt" data-icon="🎼">🎼</div>
-      <div class="icon-opt" data-icon="🎶">🎶</div>
-      <div class="icon-opt" data-icon="🌟">🌟</div>
-      <div class="icon-opt" data-icon="⭐">⭐</div>
-      <div class="icon-opt" data-icon="🔥">🔥</div>
-      <div class="icon-opt" data-icon="💫">💫</div>
-      <div class="icon-opt" data-icon="🦸">🦸</div>
-      <div class="icon-opt" data-icon="🚀">🚀</div>
-      <div class="icon-opt" data-icon="🌊">🌊</div>
-      <div class="icon-opt" data-icon="⚡">⚡</div>
-    </div>
-  </div>
+  <!-- ═══════════════════════════════════════════════════════════════
+       PANEL 1 — Add Song (existing)
+  ════════════════════════════════════════════════════════════════ -->
+  <div class="admin-tab-panel active" id="panel-add">
 
-  <!-- STEP 3: Generate quiz -->
-  <div class="admin-section">
-    <h2>③ Generate quiz <span class="field-hint">— select levels to include</span></h2>
-    <div class="level-tabs" id="level-tabs">
-      <div class="level-tab active" data-level="A1">A1</div>
-      <div class="level-tab active" data-level="A2">A2</div>
-      <div class="level-tab active" data-level="B1">B1</div>
-      <div class="level-tab active" data-level="B2">B2</div>
-      <div class="level-tab active" data-level="C1">C1</div>
+    <!-- STEP 1: Song info -->
+    <div class="admin-section">
+      <h2>① Song information</h2>
+      <div class="admin-grid">
+        <div class="admin-field">
+          <label>Title</label>
+          <input type="text" id="adm-title" placeholder="e.g. Let Her Go"/>
+        </div>
+        <div class="admin-field">
+          <label>Artist</label>
+          <input type="text" id="adm-artist" placeholder="e.g. Passenger"/>
+        </div>
+        <div class="admin-field">
+          <label>YouTube ID <span class="field-hint">(11 chars after watch?v=)</span></label>
+          <input type="text" id="adm-yt" placeholder="e.g. K4DyBUG242c" maxlength="11"/>
+        </div>
+        <div class="admin-field">
+          <label>Spotify ID <span class="field-hint">(after /track/)</span></label>
+          <input type="text" id="adm-sp" placeholder="e.g. 2uZWffKoemZDI0gHcBEcDc"/>
+        </div>
+      </div>
     </div>
-    <p class="admin-hint">Paste the full song lyrics (used to generate questions):</p>
-    <textarea id="adm-lyrics" rows="6" placeholder="Paste the full lyrics here…"></textarea>
-    <div class="admin-actions">
-      <button class="admin-btn admin-btn-primary" id="gen-btn">✨ Generate quiz with AI →</button>
-      <span class="admin-hint">Opens a prompt to copy into Claude</span>
-    </div>
-    <div class="admin-status" id="gen-status"></div>
-    <pre class="admin-quiz-preview" id="quiz-preview"></pre>
-  </div>
 
-  <!-- STEP 4: Export files -->
-  <div class="admin-section">
-    <h2>④ Export files</h2>
-    <p class="admin-hint">Once the quiz is generated, download the two files to add to your project.</p>
-    <div class="admin-actions">
-      <button class="admin-btn admin-btn-primary" id="export-song-btn" disabled>↓ Download songs/[slug].js</button>
-      <button class="admin-btn admin-btn-secondary" id="export-quiz-btn" disabled>↓ Download quizzes/[slug].js</button>
+    <!-- STEP 2: Icon -->
+    <div class="admin-section">
+      <h2>② Song icon</h2>
+      <div class="icon-picker" id="icon-picker">
+        <div class="icon-opt selected" data-icon="🎵">🎵</div>
+        <div class="icon-opt" data-icon="🎸">🎸</div>
+        <div class="icon-opt" data-icon="🎹">🎹</div>
+        <div class="icon-opt" data-icon="🎧">🎧</div>
+        <div class="icon-opt" data-icon="🎤">🎤</div>
+        <div class="icon-opt" data-icon="🎷">🎷</div>
+        <div class="icon-opt" data-icon="🎺">🎺</div>
+        <div class="icon-opt" data-icon="🎻">🎻</div>
+        <div class="icon-opt" data-icon="🥁">🥁</div>
+        <div class="icon-opt" data-icon="🪗">🪗</div>
+        <div class="icon-opt" data-icon="🎼">🎼</div>
+        <div class="icon-opt" data-icon="🎶">🎶</div>
+        <div class="icon-opt" data-icon="🌟">🌟</div>
+        <div class="icon-opt" data-icon="⭐">⭐</div>
+        <div class="icon-opt" data-icon="🔥">🔥</div>
+        <div class="icon-opt" data-icon="💫">💫</div>
+        <div class="icon-opt" data-icon="🦸">🦸</div>
+        <div class="icon-opt" data-icon="🚀">🚀</div>
+        <div class="icon-opt" data-icon="🌊">🌊</div>
+        <div class="icon-opt" data-icon="⚡">⚡</div>
+      </div>
     </div>
-    <div class="admin-status" id="export-status"></div>
 
-    <div class="admin-instructions" id="export-instructions" style="display:none;">
-      <p><strong>Next steps:</strong></p>
-      <ol>
-        <li>Move both downloaded files into your project's <code>data/songs/</code> and <code>data/quizzes/</code> folders</li>
-        <li>Open <code>data/index.js</code> and add the two import lines shown below</li>
-        <li>Add the song to the <code>catalogue</code> array</li>
-        <li>Save, push to GitHub: <code>git add . && git commit -m "add [song]" && git push</code></li>
-      </ol>
-      <pre class="admin-code-snippet" id="index-snippet"></pre>
+    <!-- STEP 3: Generate quiz -->
+    <div class="admin-section">
+      <h2>③ Generate quiz <span class="field-hint">— select levels to include</span></h2>
+      <div class="level-tabs" id="level-tabs">
+        <div class="level-tab active" data-level="A1">A1</div>
+        <div class="level-tab active" data-level="A2">A2</div>
+        <div class="level-tab active" data-level="B1">B1</div>
+        <div class="level-tab active" data-level="B2">B2</div>
+        <div class="level-tab active" data-level="C1">C1</div>
+      </div>
+      <p class="admin-hint">Paste the full song lyrics (used to generate questions):</p>
+      <textarea id="adm-lyrics" rows="6" placeholder="Paste the full lyrics here…"></textarea>
+      <div class="admin-actions">
+        <button class="admin-btn admin-btn-primary" id="gen-btn">✨ Generate quiz with AI →</button>
+        <span class="admin-hint">Opens a prompt to copy into Claude</span>
+      </div>
+      <div class="admin-status" id="gen-status"></div>
+      <pre class="admin-quiz-preview" id="quiz-preview"></pre>
     </div>
-  </div>
 
-  <!-- JSON paste modal (for file:// fallback) -->
+    <!-- STEP 4: Export files -->
+    <div class="admin-section">
+      <h2>④ Export files</h2>
+      <p class="admin-hint">Once the quiz is generated, download the two files to add to your project.</p>
+      <div class="admin-actions">
+        <button class="admin-btn admin-btn-primary"   id="export-song-btn" disabled>↓ Download songs/[slug].js</button>
+        <button class="admin-btn admin-btn-secondary" id="export-quiz-btn" disabled>↓ Download quizzes/[slug].js</button>
+      </div>
+      <div class="admin-status" id="export-status"></div>
+      <div class="admin-instructions" id="export-instructions" style="display:none;">
+        <p><strong>Next steps:</strong></p>
+        <ol>
+          <li>Move both downloaded files into your project's <code>data/songs/</code> and <code>data/quizzes/</code> folders</li>
+          <li>Open <code>data/index.js</code> and add the two import lines shown below</li>
+          <li>Add the song to the <code>catalogue</code> array</li>
+          <li>Save, push to GitHub: <code>git add . && git commit -m "add [song]" && git push</code></li>
+        </ol>
+        <pre class="admin-code-snippet" id="index-snippet"></pre>
+      </div>
+    </div>
+
+  </div><!-- /panel-add -->
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       PANEL 2 — Edit Quiz
+  ════════════════════════════════════════════════════════════════ -->
+  <div class="admin-tab-panel" id="panel-edit">
+    <div class="admin-section">
+      <h2>Select song and level</h2>
+      <div class="eq-selectors">
+        <select id="eq-song-select">
+          <option value="">— Choose a song —</option>
+        </select>
+        <div class="level-tabs" id="eq-level-tabs">
+          <div class="level-tab" data-level="A1">A1</div>
+          <div class="level-tab" data-level="A2">A2</div>
+          <div class="level-tab" data-level="B1">B1</div>
+          <div class="level-tab" data-level="B2">B2</div>
+          <div class="level-tab" data-level="C1">C1</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="eq-editor-area">
+      <div class="eq-empty">Select a song and a level to start editing.</div>
+    </div>
+
+    <div class="eq-save-bar" id="eq-save-bar" style="display:none;">
+      <button class="admin-btn admin-btn-primary" id="eq-save-btn">💾 Save file</button>
+      <button class="admin-btn admin-btn-secondary" id="eq-download-btn">↓ Download .js</button>
+      <div class="admin-status" id="eq-save-status"></div>
+    </div>
+  </div><!-- /panel-edit -->
+
+  <!-- JSON paste modal -->
   <div id="json-modal" style="display:none;">
     <div class="json-modal-inner">
       <div class="json-modal-header">
@@ -128,28 +171,42 @@
       </div>
       <div class="admin-field">
         <label>Paste JSON response here</label>
-        <textarea id="json-paste-input" rows="8" placeholder='{"A1":[{"lyrics":"...","question":"...","options":["A","B","C","D"],"correct":0,"timestamp":30,"feedback":"✅ ..."}]}'></textarea>
+        <textarea id="json-paste-input" rows="8" placeholder='{"A1":[{"lyrics":"...","question":"...","options":["A","B","C","D"],"correct":0,"timestamp":30,"feedback":"❌ ..."}]}'></textarea>
       </div>
       <div class="admin-actions">
-        <button class="admin-btn admin-btn-primary" id="import-json-btn">✓ Import JSON</button>
+        <button class="admin-btn admin-btn-primary"   id="import-json-btn">✓ Import JSON</button>
         <button class="admin-btn admin-btn-secondary" id="cancel-json-btn">Cancel</button>
       </div>
       <div class="admin-status" id="modal-status"></div>
     </div>
   </div>
+
 </main>
 
 <script type="module">
-import { renderNav } from '../js/ui.js';
+import { renderNav }      from '../js/ui.js';
+import { catalogue, hasQuiz } from '../data/index.js';
 renderNav('admin');
 
-// ── State ─────────────────────────────────────────────────────────
+// ── Tab switching ─────────────────────────────────────────────────
+document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.admin-tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.panel).classList.add('active');
+  });
+});
+
+// ════════════════════════════════════════════════════════════════════
+//  PANEL 1 — Add Song (unchanged logic)
+// ════════════════════════════════════════════════════════════════════
+
 let selectedIcon  = '🎵';
 let generatedQuiz = null;
 let generatedSlug = null;
 let promptText    = '';
 
-// ── Icon picker ───────────────────────────────────────────────────
 document.getElementById('icon-picker').addEventListener('click', e => {
   const opt = e.target.closest('.icon-opt');
   if (!opt) return;
@@ -158,17 +215,14 @@ document.getElementById('icon-picker').addEventListener('click', e => {
   selectedIcon = opt.dataset.icon;
 });
 
-// ── Level tabs ────────────────────────────────────────────────────
 document.getElementById('level-tabs').addEventListener('click', e => {
   const tab = e.target.closest('.level-tab');
   if (tab) tab.classList.toggle('active');
 });
 
-// ── Helpers ───────────────────────────────────────────────────────
 function slugify(str) {
   return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
-
 function setStatus(id, type, msg) {
   const el = document.getElementById(id);
   if (!el) return;
@@ -176,12 +230,10 @@ function setStatus(id, type, msg) {
   el.textContent = msg;
   el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
-
 function getSelectedLevels() {
-  return [...document.querySelectorAll('.level-tab.active')].map(t => t.dataset.level);
+  return [...document.querySelectorAll('#level-tabs .level-tab.active')].map(t => t.dataset.level);
 }
 
-// ── Quiz generation ───────────────────────────────────────────────
 document.getElementById('gen-btn').addEventListener('click', generateQuiz);
 
 async function generateQuiz() {
@@ -208,14 +260,13 @@ For each question provide:
 - options: array of 4 answers
 - correct: index (0-3) of the correct answer
 - timestamp: estimated position in seconds in the song
-- feedback: explanation starting with ✅
+- feedback: explanation starting with ❌
 
 Respond ONLY with a valid JSON object. No markdown, no backticks. Example:
-{"A1":[{"lyrics":"line1\\nline2","question":"What does X mean?","options":["A","B","C","D"],"correct":1,"timestamp":30,"feedback":"✅ Explanation."}],"A2":[...]}
+{"A1":[{"lyrics":"line1\\nline2","question":"What does X mean?","options":["A","B","C","D"],"correct":1,"timestamp":30,"feedback":"❌ Explanation."}],"A2":[...]}
 
 Only include levels: ${levels.join(', ')}`;
 
-  // Direct API calls are blocked by CORS on static sites — always use the paste modal.
   showPasteModal();
 }
 
@@ -234,7 +285,6 @@ function applyGeneratedQuiz(parsed, levels) {
   buildIndexSnippet();
 }
 
-// ── Export files ──────────────────────────────────────────────────
 document.getElementById('export-song-btn').addEventListener('click', exportSongFile);
 document.getElementById('export-quiz-btn').addEventListener('click', exportQuizFile);
 
@@ -256,20 +306,214 @@ export const song = {
 };\n`;
 
   downloadFile(`${slug}.js`, content);
-  setStatus('export-status', 'success', `✅ songs/${slug}.js downloaded — move it to data/songs/`);
+  setStatus('export-status', 'success', `✅ songs/${slug}.js downloaded`);
   document.getElementById('export-instructions').style.display = 'block';
 }
 
 function exportQuizFile() {
   if (!generatedQuiz) { setStatus('export-status', 'error', 'Generate the quiz first.'); return; }
-  const slug    = generatedSlug;
-  const title   = document.getElementById('adm-title').value.trim();
-  const artist  = document.getElementById('adm-artist').value.trim();
-  const content = `// data/quizzes/${slug}.js\n// Questions for ${title} — ${artist}\n\nexport const quiz = ${JSON.stringify(generatedQuiz, null, 2)};\n`;
-
+  const slug   = generatedSlug;
+  const title  = document.getElementById('adm-title').value.trim();
+  const artist = document.getElementById('adm-artist').value.trim();
+  const content = buildQuizFileContent(slug, title, artist, generatedQuiz);
   downloadFile(`${slug}-quiz.js`, content);
-  setStatus('export-status', 'success', `✅ quizzes/${slug}.js downloaded — move it to data/quizzes/`);
+  setStatus('export-status', 'success', `✅ quizzes/${slug}-quiz.js downloaded`);
   document.getElementById('export-instructions').style.display = 'block';
+}
+
+function buildIndexSnippet() {
+  const slug    = generatedSlug;
+  const varName = slug.replace(/-/g, '_');
+  document.getElementById('index-snippet').textContent =
+`// In data/index.js — add these lines:
+
+import { song as ${varName} }     from './songs/${slug}.js';
+import { quiz as ${varName}Quiz } from './quizzes/${slug}-quiz.js';
+
+// Then in the catalogue array:
+{ ...${varName}, quiz: ${varName}Quiz },`;
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  PANEL 2 — Edit Quiz
+// ════════════════════════════════════════════════════════════════════
+
+let eqSong      = null;   // current song object
+let eqLevel     = null;   // current level string
+
+// Populate song selector from catalogue (skip coming-soon)
+const songSelect = document.getElementById('eq-song-select');
+catalogue
+  .filter(s => !s.comingSoon && s.quiz)
+  .forEach(s => {
+    const opt = document.createElement('option');
+    opt.value       = s.id;
+    opt.textContent = `${s.icon}  ${s.title} — ${s.artist}`;
+    songSelect.appendChild(opt);
+  });
+
+songSelect.addEventListener('change', () => {
+  eqSong  = catalogue.find(s => s.id === songSelect.value) || null;
+  eqLevel = null;
+  document.querySelectorAll('#eq-level-tabs .level-tab').forEach(t => t.classList.remove('active'));
+  renderEditor();
+});
+
+document.getElementById('eq-level-tabs').addEventListener('click', e => {
+  const tab = e.target.closest('.level-tab');
+  if (!tab || !eqSong) return;
+  const level = tab.dataset.level;
+  if (!hasQuiz(eqSong.id, level)) return; // skip unavailable levels
+  document.querySelectorAll('#eq-level-tabs .level-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  eqLevel = level;
+  renderEditor();
+});
+
+// Dim level tabs that have no quiz for the selected song
+songSelect.addEventListener('change', () => {
+  document.querySelectorAll('#eq-level-tabs .level-tab').forEach(tab => {
+    const available = eqSong && hasQuiz(eqSong.id, tab.dataset.level);
+    tab.style.opacity        = available ? '1' : '0.3';
+    tab.style.pointerEvents  = available ? '' : 'none';
+    tab.style.textDecoration = available ? '' : 'line-through';
+  });
+});
+
+function renderEditor() {
+  const area    = document.getElementById('eq-editor-area');
+  const saveBar = document.getElementById('eq-save-bar');
+
+  if (!eqSong || !eqLevel) {
+    area.innerHTML = '<div class="eq-empty">Select a song and a level to start editing.</div>';
+    saveBar.style.display = 'none';
+    return;
+  }
+
+  const questions = eqSong.quiz[eqLevel];
+  if (!questions || !questions.length) {
+    area.innerHTML = '<div class="eq-empty">No questions found for this level.</div>';
+    saveBar.style.display = 'none';
+    return;
+  }
+
+  const letters = ['A', 'B', 'C', 'D'];
+  area.innerHTML = questions.map((q, qi) => `
+    <div class="eq-card" data-qi="${qi}">
+      <div class="eq-card-header">
+        <span class="eq-card-title">Question ${qi + 1}</span>
+      </div>
+
+      <div class="eq-field">
+        <label>Lyrics excerpt</label>
+        <textarea class="eq-lyrics" rows="3">${escHtml(q.lyrics)}</textarea>
+      </div>
+
+      <div class="eq-field">
+        <label>Question</label>
+        <input type="text" class="eq-question" value="${escAttr(q.question)}"/>
+      </div>
+
+      <div class="eq-field">
+        <label>Options <span class="field-hint">— click the radio to mark the correct answer</span></label>
+        <div class="eq-options">
+          ${q.options.map((opt, oi) => `
+            <div class="eq-option-row">
+              <input type="radio" name="correct-${qi}" value="${oi}" ${q.correct === oi ? 'checked' : ''}/>
+              <span class="opt-label">${letters[oi]}</span>
+              <input type="text" class="eq-option" value="${escAttr(opt)}"/>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="eq-field" style="display:flex;gap:1rem;align-items:flex-start;">
+        <div>
+          <label>Timestamp (s)</label>
+          <input type="number" class="eq-timestamp" value="${q.timestamp || 0}" min="0"/>
+        </div>
+        <div style="flex:1;">
+          <label>Feedback</label>
+          <input type="text" class="eq-feedback" value="${escAttr(q.feedback)}"/>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  saveBar.style.display = 'flex';
+  document.getElementById('eq-save-status').className = 'admin-status';
+  document.getElementById('eq-save-status').textContent = '';
+}
+
+function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function escAttr(s) { return String(s).replace(/"/g,'&quot;'); }
+
+function collectEdits() {
+  const cards = document.querySelectorAll('.eq-card');
+  return Array.from(cards).map(card => {
+    const qi      = parseInt(card.dataset.qi);
+    const lyrics  = card.querySelector('.eq-lyrics').value;
+    const question = card.querySelector('.eq-question').value;
+    const options  = Array.from(card.querySelectorAll('.eq-option')).map(i => i.value);
+    const correct  = parseInt(card.querySelector(`input[name="correct-${qi}"]:checked`)?.value ?? 0);
+    const timestamp = parseInt(card.querySelector('.eq-timestamp').value) || 0;
+    const feedback  = card.querySelector('.eq-feedback').value;
+    return { lyrics, question, options, correct, timestamp, feedback };
+  });
+}
+
+// Save button — File System Access API
+document.getElementById('eq-save-btn').addEventListener('click', async () => {
+  if (!eqSong || !eqLevel) return;
+
+  const edits   = collectEdits();
+  const updated = buildUpdatedQuiz(edits);
+  const content = buildQuizFileContent(eqSong.id, eqSong.title, eqSong.artist, updated);
+  const filename = `${eqSong.id}-quiz.js`;
+
+  if ('showSaveFilePicker' in window) {
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: filename,
+        types: [{ description: 'JavaScript file', accept: { 'text/javascript': ['.js'] } }],
+      });
+      const writable = await handle.createWritable();
+      await writable.write(content);
+      await writable.close();
+      setStatus('eq-save-status', 'success', `✅ ${filename} saved — reload the app to see changes`);
+    } catch (err) {
+      if (err.name !== 'AbortError') setStatus('eq-save-status', 'error', `❌ ${err.message}`);
+    }
+  } else {
+    // Fallback: download
+    downloadFile(filename, content);
+    setStatus('eq-save-status', 'info', `File System API not supported — file downloaded instead. Move it to data/quizzes/.`);
+  }
+});
+
+// Download button — always available
+document.getElementById('eq-download-btn').addEventListener('click', () => {
+  if (!eqSong || !eqLevel) return;
+  const edits   = collectEdits();
+  const updated = buildUpdatedQuiz(edits);
+  const content = buildQuizFileContent(eqSong.id, eqSong.title, eqSong.artist, updated);
+  downloadFile(`${eqSong.id}-quiz.js`, content);
+  setStatus('eq-save-status', 'success', `✅ Downloaded — move to data/quizzes/ to apply changes`);
+});
+
+function buildUpdatedQuiz(editedQuestions) {
+  // Merge edits into existing quiz (keep other levels untouched)
+  const result = {};
+  Object.keys(eqSong.quiz).forEach(lv => {
+    result[lv] = lv === eqLevel ? editedQuestions : eqSong.quiz[lv];
+  });
+  return result;
+}
+
+// ── Shared helpers ────────────────────────────────────────────────
+
+function buildQuizFileContent(slug, title, artist, quizObj) {
+  return `// data/quizzes/${slug}-quiz.js\n// Questions for ${title} — ${artist}\n\nexport const quiz = ${JSON.stringify(quizObj, null, 2)};\n`;
 }
 
 function downloadFile(filename, content) {
@@ -281,20 +525,7 @@ function downloadFile(filename, content) {
   setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(a.href); }, 100);
 }
 
-function buildIndexSnippet() {
-  const slug    = generatedSlug;
-  const varName = slug.replace(/-/g, '_');
-  document.getElementById('index-snippet').textContent =
-`// In data/index.js — add these lines:
-
-import { song as ${varName} }     from './songs/${slug}.js';
-import { quiz as ${varName}Quiz } from './quizzes/${slug}.js';
-
-// Then in the catalogue array:
-{ ...${varName}, quiz: ${varName}Quiz },`;
-}
-
-// ── Paste modal (file:// fallback) ────────────────────────────────
+// ── Paste modal ───────────────────────────────────────────────────
 function showPasteModal() {
   document.getElementById('modal-prompt').textContent = promptText;
   document.getElementById('json-paste-input').value  = '';
@@ -303,8 +534,8 @@ function showPasteModal() {
   document.getElementById('json-modal').style.display = 'flex';
 }
 
-document.getElementById('json-modal-close').addEventListener('click',  closeModal);
-document.getElementById('cancel-json-btn').addEventListener('click',   closeModal);
+document.getElementById('json-modal-close').addEventListener('click', closeModal);
+document.getElementById('cancel-json-btn').addEventListener('click',  closeModal);
 function closeModal() { document.getElementById('json-modal').style.display = 'none'; }
 
 document.getElementById('copy-prompt-btn').addEventListener('click', () => {

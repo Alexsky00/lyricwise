@@ -43,11 +43,29 @@ Songs already present in v1.13 (Carry On Wayward Son, On & On, Heroes Tonight) a
 
 ### New features
 
-**Admin page** (`pages/admin.html`)
+**Admin page — Add Song tab** (`pages/admin.html`)
 A new admin-only tool that generates AI quiz prompts. The page produces a structured prompt
 to copy into Claude, which returns a ready-to-paste quiz file for any song and level.
-Download buttons are also available to export the raw `songs` and `lyrics` data files.
-*¡¡¡¡DON'T USE IT IF YOU DON'T HAVE THE SOURCE CODE!!!!*
+Download buttons are available to export the generated `songs/*.js` and `quizzes/*.js` files.
+> ⚠️ Requires access to the source code to be useful.
+
+**Admin page — Edit Quiz tab** (`pages/admin.html`)
+A second sub-tab allows editing existing quiz questions directly in the browser:
+- Dropdown to select any available song; level buttons dim automatically for missing levels
+- Each question is rendered as an editable card: lyrics excerpt, question text, 4 options,
+  correct answer (radio), timestamp, and feedback
+- **Save file** button: uses the File System Access API to write the updated `.js` file
+  directly to `data/quizzes/` on disk (Chrome/Edge only)
+- **Download .js** button: universal fallback — downloads the file to move manually
+- All levels are preserved in the output; only the edited level is changed
+
+**Light / Dark mode toggle**
+A ⚙ settings button appears at the right end of the navigation bar on every page. Clicking
+it opens a small dropdown with a toggle switch to switch between Dark mode (default) and
+Light mode. The preference is persisted in `localStorage` (`lw_theme`) and applied
+immediately on page load to avoid any flash of unstyled content. The light theme uses a
+blue-tinted palette (`--bg-card: #d8e0f5`, `--bg-panel: #c8d4ee`) with dark text, keeping
+the same blue accent colour as the dark theme.
 
 **Coming-soon level badge graying**
 Level badges on coming-soon cards are now visually disabled: `opacity: 0.28`,

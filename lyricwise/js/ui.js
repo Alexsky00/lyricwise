@@ -3,12 +3,31 @@
 
 import { router } from './router.js';
 
+// ── Theme ─────────────────────────────────────────────────────────
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('lw_theme', theme);
+}
+
+// Apply stored theme immediately (before first render)
+applyTheme(localStorage.getItem('lw_theme') || 'dark');
+
+export function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') || 'dark';
+  applyTheme(current === 'dark' ? 'light' : 'dark');
+  // Sync all toggle checkboxes on the page
+  document.querySelectorAll('.theme-toggle input').forEach(cb => {
+    cb.checked = document.documentElement.getAttribute('data-theme') === 'light';
+  });
+}
+
 // ── Nav ──────────────────────────────────────────────────────────
-// Call renderNav('library') to highlight the active link.
 
 export function renderNav(activePage) {
   const nav = document.getElementById('main-nav');
   if (!nav) return;
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
   nav.innerHTML = `
     <a class="nav-logo" href="#" onclick="event.preventDefault(); lw.go('home')">
       🎵 Lyric<span>Wise</span>
@@ -17,14 +36,48 @@ export function renderNav(activePage) {
       <a class="${activePage === 'home'  ? 'active' : ''}" href="#" onclick="event.preventDefault(); lw.go('home')">Home</a>
       <a class="${activePage === 'stats' ? 'active' : ''}" href="#" onclick="event.preventDefault(); lw.go('stats')">Stats</a>
       <a class="nav-cta${activePage === 'library' ? ' active' : ''}" href="#" onclick="event.preventDefault(); lw.go('library')">Browse Songs</a>
-      <a class="nav-admin" href="#" onclick="event.preventDefault(); lw.go('admin')" title="Admin">⚙</a>
+      <a class="nav-admin" href="#" onclick="event.preventDefault(); lw.go('admin')">Admin</a>
+      <div style="position:relative;">
+        <button class="nav-settings-btn" id="settings-btn" title="Settings" onclick="lw.toggleSettings()">⚙</button>
+        <div class="settings-popover" id="settings-popover" style="display:none;">
+          <div class="settings-popover-title">Settings</div>
+          <div class="settings-row">
+            <span class="settings-row-label">☀️ Light mode</span>
+            <label class="theme-toggle">
+              <input type="checkbox" ${isLight ? 'checked' : ''} onchange="lw.toggleTheme()"/>
+              <span class="theme-toggle-track"></span>
+            </label>
+          </div>
+        </div>
+      </div>
     </div>
   `;
 }
 
 // ── Global shortcut (used in onclick attributes in HTML) ──────────
-// Makes lw.go('library') work from inline HTML onclick handlers.
-window.lw = { go: (page, params) => router.go(page, params) };
+window.lw = {
+  go:            (page, params) => router.go(page, params),
+  toggleTheme:   () => toggleTheme(),
+  toggleSettings: () => {
+    const pop = document.getElementById('settings-popover');
+    if (!pop) return;
+    const visible = pop.style.display !== 'none';
+    pop.style.display = visible ? 'none' : 'block';
+    if (!visible) {
+      // Close on outside click
+      setTimeout(() => {
+        document.addEventListener('click', function handler(e) {
+          if (!document.getElementById('settings-popover')?.contains(e.target) &&
+              e.target.id !== 'settings-btn') {
+            if (document.getElementById('settings-popover'))
+              document.getElementById('settings-popover').style.display = 'none';
+            document.removeEventListener('click', handler);
+          }
+        });
+      }, 0);
+    }
+  },
+};
 
 // ── Toast ─────────────────────────────────────────────────────────
 

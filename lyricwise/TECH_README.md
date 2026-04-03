@@ -48,12 +48,25 @@ lyricwise/
 
 ## Adding a new song
 
+### Option A — Admin page (recommended)
+
+1. Open `pages/admin.html` in the browser
+2. Fill in the song info (title, artist, YouTube/Spotify IDs, icon)
+3. Paste the lyrics and click **✨ Generate quiz with AI →** — copy the prompt into Claude
+4. Paste Claude's JSON response back into the modal and click **Import**
+5. Download the two generated files (`songs/[slug].js` and `quizzes/[slug]-quiz.js`)
+6. Move them into `data/songs/` and `data/quizzes/`
+7. Open `data/index.js` and add the import lines shown by the admin page
+8. Push to GitHub
+
+### Option B — Manual
+
 1. Create `data/songs/my-song.js` (copy an existing one as template)
-2. Create `data/quizzes/my-song.js` (copy an existing one as template)
+2. Create `data/quizzes/my-song-quiz.js` (copy an existing one as template)
 3. Open `data/index.js` and add:
    ```js
    import { song as mySong }     from './songs/my-song.js';
-   import { quiz as mySongQuiz } from './quizzes/my-song.js';
+   import { quiz as mySongQuiz } from './quizzes/my-song-quiz.js';
    // then in the catalogue array:
    { ...mySong, quiz: mySongQuiz },
    ```
@@ -63,6 +76,35 @@ lyricwise/
    git commit -m "add my-song"
    git push
    ```
+
+---
+
+## Editing an existing quiz
+
+1. Open `pages/admin.html` in the browser
+2. Switch to the **✏️ Edit Quiz** tab
+3. Select the song and level — each question appears as an editable card
+4. Modify lyrics, question, options, correct answer, timestamp, or feedback
+5. Click **💾 Save file** (Chrome/Edge: writes directly to `data/quizzes/`) or
+   **↓ Download .js** (all browsers: download then move to `data/quizzes/` manually)
+6. Reload the app to see changes
+
+---
+
+## Light / Dark mode
+
+The app ships with a dark theme by default. A ⚙ button at the right of the nav bar opens a
+settings dropdown with a Light mode toggle. The choice is saved in `localStorage` as `lw_theme`
+(`"dark"` or `"light"`) and reapplied on every page load before the first render.
+
+**To change the default theme**, edit the fallback in `js/ui.js`:
+```js
+applyTheme(localStorage.getItem('lw_theme') || 'dark'); // ← change 'dark' to 'light'
+```
+
+**Theme tokens** are defined in `css/style.css` under `[data-theme="light"] { … }`.
+The light palette uses blue-tinted card backgrounds (`#d8e0f5` / `#c8d4ee`) with dark text.
+Both themes share the same blue accent variables (`--blue-main`, `--blue-light`, etc.).
 
 ---
 
