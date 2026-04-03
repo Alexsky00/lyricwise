@@ -30,11 +30,12 @@ structured multi-page project with ES modules.
 
 Two fully playable songs added; one coming-soon placeholder.
 
-| Song              | Artist        | Status        | Levels                 |
-|---                |---            |---            |---                     |
-| Stand By Me       | Ben E. King   | Available     | A1 · A2 · B1 · B2 · C1 |
-| Careless Whisper  | George Michael| Available     | A1 · A2 · B1 · B2 · C1 |
-| Starships         | Nicki Minaj   | Coming Soon   | —                      |
+| Song              | Artist         | Status        | Levels                 |
+|---                |---             |---            |---                     |
+| Stand By Me       | Ben E. King    | Available     | A1 · A2 · B1 · B2 · C1 |
+| Careless Whisper  | George Michael | Available     | A1 · A2 · B1 · B2 · C1 |
+| Words             | F.R. David     | Available     | A1 · A2 · B1           |
+| Starships         | Nicki Minaj    | Coming Soon   | —                      |
 
 Songs already present in v1.13 (Carry On Wayward Son, On & On, Heroes Tonight) are unchanged.
 

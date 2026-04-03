@@ -20,6 +20,9 @@ import { quiz as standByMeQuiz } from './quizzes/stand-by-me-quiz.js';
 import { song as carelessWhisper }     from './songs/careless-whisper.js';
 import { quiz as carelessWhisperQuiz } from './quizzes/careless-whisper-quiz.js';
 
+import { song as words } from './songs/words.js';
+import { quiz as wordsQuiz } from './quizzes/words-quiz.js';
+
 import { song as starships } from './songs/starships.js';
 
 // catalogue: array of song objects, each with its quiz attached
@@ -29,6 +32,7 @@ export const catalogue = [
   { ...heroesTonight, quiz: heroesTonightQuiz },
   { ...standByMe, quiz: standByMeQuiz},
   { ...carelessWhisper, quiz: carelessWhisperQuiz },
+  { ...words, quiz: wordsQuiz },
   { ...starships },
 ];
 
