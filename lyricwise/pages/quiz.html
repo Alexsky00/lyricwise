@@ -146,7 +146,7 @@
 
 <script type="module">
 import { router }                   from '../js/router.js';
-import { renderNav, launchConfetti } from '../js/ui.js';
+import { renderNav, launchConfetti, renderFooter } from '../js/ui.js';
 import { getSong, hasQuiz }         from '../data/index.js';
 import { getScore, saveScore }      from '../js/storage.js';
 import * as Quiz                    from '../js/quiz.js';
@@ -467,6 +467,8 @@ function showScreen(name) {
 
 // ── Start ─────────────────────────────────────────────────────────
 init();
+renderFooter();
 </script>
+<footer id="main-footer"></footer>
 </body>
 </html>

@@ -2,6 +2,31 @@
 
 ---
 
+## v1.2-Alpha
+*April 2026*
+
+---
+
+### New features
+
+**Version number display**
+The app version is defined as a single string constant (`APP_VERSION` in `js/ui.js`).
+It appears in the footer of every page and in the badge on the Admin page header.
+Changing the version in one place updates the entire app.
+
+**Settings menu (⚙)**
+A gear button at the right end of the navigation bar opens a dropdown with app settings.
+Currently contains the Light / Dark mode toggle. Closes on outside click.
+
+**Light / Dark mode toggle**
+Available in the ⚙ settings dropdown on every page. Switches between Dark (default) and
+Light themes. Preference is saved in `localStorage` (`lw_theme`) and applied before the
+first render to avoid any flash. Light mode uses a blue-tinted palette; dark mode is unchanged.
+
+---
+
+---
+
 ## v1.0-Alpha — Multi-file project
 *April 3rd 2026*
 
@@ -58,14 +83,6 @@ A second sub-tab allows editing existing quiz questions directly in the browser:
   directly to `data/quizzes/` on disk (Chrome/Edge only)
 - **Download .js** button: universal fallback — downloads the file to move manually
 - All levels are preserved in the output; only the edited level is changed
-
-**Light / Dark mode toggle**
-A ⚙ settings button appears at the right end of the navigation bar on every page. Clicking
-it opens a small dropdown with a toggle switch to switch between Dark mode (default) and
-Light mode. The preference is persisted in `localStorage` (`lw_theme`) and applied
-immediately on page load to avoid any flash of unstyled content. The light theme uses a
-blue-tinted palette (`--bg-card: #d8e0f5`, `--bg-panel: #c8d4ee`) with dark text, keeping
-the same blue accent colour as the dark theme.
 
 **Coming-soon level badge graying**
 Level badges on coming-soon cards are now visually disabled: `opacity: 0.28`,

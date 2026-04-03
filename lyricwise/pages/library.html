@@ -28,12 +28,13 @@
   </div>
 
 <script type="module">
-  import { renderNav } from '../js/ui.js';
+  import { renderNav, renderFooter } from '../js/ui.js';
   import { catalogue, hasQuiz } from '../data/index.js';
   import { hasAnyScore } from '../js/storage.js';
   import { router } from '../js/router.js';
 
   renderNav('library');
+  renderFooter();
 
   const grid = document.getElementById('songs-grid');
   const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1'];
@@ -109,5 +110,6 @@
     });
   });
 </script>
+<footer id="main-footer"></footer>
 </body>
 </html>

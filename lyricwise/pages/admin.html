@@ -16,7 +16,7 @@
       <h1>⚙ Admin</h1>
       <p>Manage songs, generate and edit quizzes</p>
     </div>
-    <span class="admin-badge">Prototype version</span>
+    <span class="admin-badge" id="admin-version-badge"></span>
   </div>
 
   <!-- Tab navigation -->
@@ -184,9 +184,11 @@
 </main>
 
 <script type="module">
-import { renderNav }      from '../js/ui.js';
+import { renderNav, renderFooter, APP_VERSION } from '../js/ui.js';
 import { catalogue, hasQuiz } from '../data/index.js';
 renderNav('admin');
+renderFooter();
+document.getElementById('admin-version-badge').textContent = `v${APP_VERSION}`;
 
 // ── Tab switching ─────────────────────────────────────────────────
 document.querySelectorAll('.admin-tab-btn').forEach(btn => {
@@ -567,5 +569,6 @@ document.getElementById('import-json-btn').addEventListener('click', () => {
   }
 });
 </script>
+<footer id="main-footer"></footer>
 </body>
 </html>

@@ -23,11 +23,12 @@
 </div>
 
 <script type="module">
-  import { renderNav } from '../js/ui.js';
+  import { renderNav, renderFooter } from '../js/ui.js';
   import { catalogue, hasQuiz } from '../data/index.js';
   import { getAllScores, resetAll } from '../js/storage.js';
 
   renderNav('stats');
+  renderFooter();
 
   const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1'];
 
@@ -148,5 +149,6 @@
     }
   });
 </script>
+<footer id="main-footer"></footer>
 </body>
 </html>

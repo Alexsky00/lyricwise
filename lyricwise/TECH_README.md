@@ -108,6 +108,22 @@ Both themes share the same blue accent variables (`--blue-main`, `--blue-light`,
 
 ---
 
+## App version
+
+The version string is defined in `js/ui.js`:
+
+```js
+export const APP_VERSION = '1.2-Alpha';
+```
+
+It is automatically displayed in:
+- The **footer** of every page
+- The **Admin page header** badge
+
+To bump the version, change this one line.
+
+---
+
 ## Deploy to GitHub Pages
 
 Any push to `main` is automatically published to:

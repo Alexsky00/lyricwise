@@ -3,6 +3,9 @@
 
 import { router } from './router.js';
 
+// ── Version ───────────────────────────────────────────────────────
+export const APP_VERSION = '1.2-Alpha';
+
 // ── Theme ─────────────────────────────────────────────────────────
 
 function applyTheme(theme) {
@@ -51,6 +54,16 @@ export function renderNav(activePage) {
         </div>
       </div>
     </div>
+  `;
+}
+
+// ── Footer ────────────────────────────────────────────────────────
+
+export function renderFooter() {
+  const footer = document.getElementById('main-footer');
+  if (!footer) return;
+  footer.innerHTML = `
+    <span class="footer-version">LyricWise v${APP_VERSION}</span>
   `;
 }
 
