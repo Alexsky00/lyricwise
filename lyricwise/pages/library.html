@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LyricWise — Library</title>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&display=swap" rel="stylesheet"/>
+</head>
+<body>
+<nav id="main-nav"></nav>
+  <div class="library-header">
+    <h1>Song Library</h1>
+    <p>Choose a song and a level to start your quiz</p>
+  </div>
+
+  <div class="filter-bar" id="filter-bar">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="A1">A1</button>
+    <button class="filter-btn" data-filter="A2">A2</button>
+    <button class="filter-btn" data-filter="B1">B1</button>
+    <button class="filter-btn" data-filter="B2">B2</button>
+    <button class="filter-btn" data-filter="C1">C1</button>
+  </div>
+
+  <div class="songs-grid" id="songs-grid">
+    <!-- Cards injected by JS -->
+  </div>
+
+<script type="module">
+  import { renderNav } from '../js/ui.js';
+  import { catalogue, hasQuiz } from '../data/index.js';
+  import { hasAnyScore } from '../js/storage.js';
+  import { router } from '../js/router.js';
+
+  renderNav('library');
+
+  const grid = document.getElementById('songs-grid');
+  const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1'];
+
+  // Render all song cards
+  catalogue.forEach(song => {
+    const card = document.createElement('div');
+    card.dataset.levels = LEVELS.filter(l => hasQuiz(song.id, l)).join(' ');
+
+    if (song.comingSoon) {
+      card.className = 'song-card coming-soon';
+      const badges = LEVELS.map(lv => `<span class="level-badge ${lv}">${lv}</span>`).join('');
+      card.innerHTML = `
+        <span class="coming-soon-badge">Coming Soon</span>
+        <div class="song-card-art">${song.icon}</div>
+        <div class="song-card-body">
+          <div class="song-card-title">${song.title}</div>
+          <div class="song-card-artist">${song.artist}</div>
+          <div class="level-badges">${badges}</div>
+        </div>`;
+      grid.appendChild(card);
+      return;
+    }
+
+    card.className = 'song-card';
+
+    const badges = LEVELS.map(lv => {
+      const available = hasQuiz(song.id, lv);
+      return `<span
+        class="level-badge ${lv}${available ? '' : ' no-quiz'}"
+        title="${available ? `Start ${lv} quiz` : `${lv} not available yet`}"
+        data-song="${song.id}"
+        data-level="${lv}"
+      >${lv}</span>`;
+    }).join('');
+
+    const completed = hasAnyScore(song.id)
+      ? '<span class="completed-badge">✓ Played</span>' : '';
+
+    card.innerHTML = `
+      <div class="song-card-art">${song.icon}</div>
+      <div class="song-card-body">
+        <div class="song-card-title">${song.title} ${completed}</div>
+        <div class="song-card-artist">${song.artist}</div>
+        <div class="level-badges">${badges}</div>
+      </div>`;
+
+    // Click on card → level selection page
+    card.addEventListener('click', () => {
+      router.go('quiz', { songId: song.id });
+    });
+
+    // Click on an available badge → go straight to quiz
+    card.querySelectorAll('.level-badge:not(.no-quiz)').forEach(badge => {
+      badge.addEventListener('click', e => {
+        e.stopPropagation();
+        router.go('quiz', { songId: badge.dataset.song, level: badge.dataset.level });
+      });
+    });
+
+    grid.appendChild(card);
+  });
+
+  // Filter buttons
+  document.getElementById('filter-bar').addEventListener('click', e => {
+    const btn = e.target.closest('.filter-btn');
+    if (!btn) return;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const filter = btn.dataset.filter;
+    document.querySelectorAll('.song-card').forEach(card => {
+      card.style.display = (filter === 'all' || card.dataset.levels.includes(filter)) ? '' : 'none';
+    });
+  });
+</script>
+</body>
+</html>

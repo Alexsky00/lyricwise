@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LyricWise — Stats</title>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&display=swap" rel="stylesheet"/>
+</head>
+<body>
+<nav id="main-nav"></nav>
+
+<div class="stats-header">
+  <div>
+    <h1>📊 My Progress</h1>
+    <p>Track your quiz history and best scores</p>
+  </div>
+  <button class="btn-reset" id="reset-btn">🗑 Reset History</button>
+</div>
+
+<div class="stats-body" id="stats-body">
+  <!-- Rendered by JS -->
+</div>
+
+<script type="module">
+  import { renderNav } from '../js/ui.js';
+  import { catalogue, hasQuiz } from '../data/index.js';
+  import { getAllScores, resetAll } from '../js/storage.js';
+
+  renderNav('stats');
+
+  const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1'];
+
+  function render() {
+    const container = document.getElementById('stats-body');
+    const scores = getAllScores();
+    const songs = catalogue;
+
+    // Global summary
+    let totalQuizzes = 0, totalLevelsDone = 0, totalPerfect = 0, bestPct = 0;
+    songs.forEach(song => {
+      LEVELS.forEach(level => {
+        const d = scores[song.id]?.[level];
+        if (d) {
+          totalQuizzes += d.playCount || d.attempts || 1;
+          totalLevelsDone++;
+          const pct = Math.round((d.best / d.total) * 100);
+          if (pct === 100) totalPerfect++;
+          if (pct > bestPct) bestPct = pct;
+        }
+      });
+    });
+    const maxLevels = songs.length * LEVELS.length;
+
+    let html = `<div class="stats-summary">
+      <div class="stat-card">
+        <div class="stat-card-icon">🎯</div>
+        <div class="stat-card-value">${totalQuizzes}</div>
+        <div class="stat-card-label">Quizzes Played</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon">📈</div>
+        <div class="stat-card-value">${totalLevelsDone}<span style="font-size:1rem;color:var(--text-muted)">/${maxLevels}</span></div>
+        <div class="stat-card-label">Levels Tried</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon">⭐</div>
+        <div class="stat-card-value">${totalPerfect}</div>
+        <div class="stat-card-label">Perfect Scores</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon">🏆</div>
+        <div class="stat-card-value">${totalQuizzes > 0 ? bestPct + '%' : '—'}</div>
+        <div class="stat-card-label">Best Score</div>
+      </div>
+    </div>`;
+
+    if (totalQuizzes === 0) {
+      html += `<div class="stats-empty">
+        <div class="stats-empty-icon">🎵</div>
+        <p>No quizzes played yet. Head to the Library and pick a song to get started!</p>
+      </div>`;
+      container.innerHTML = html;
+      return;
+    }
+
+    songs.forEach(song => {
+      const songScores = scores[song.id];
+      const anyPlayed = LEVELS.some(lv => songScores?.[lv]);
+      if (!anyPlayed) return;
+
+      html += `<div class="stats-song-block">
+        <div class="stats-song-header">
+          <div class="stats-song-icon">${song.icon}</div>
+          <div>
+            <div class="stats-song-title">${song.title}</div>
+            <div class="stats-song-artist">${song.artist}</div>
+          </div>
+        </div>`;
+
+      LEVELS.forEach(level => {
+        const d = songScores?.[level];
+        if (!d) {
+          html += `<div class="stats-level-row not-played">
+            <span class="stats-level-pill ${level}">${level}</span>
+            <div class="stats-bar-wrap"><div class="stats-bar-fill" style="width:0%"></div></div>
+            <div class="stats-meta">
+              <span class="stats-meta-score">—</span>
+              <span class="stats-meta-sub">Not played</span>
+            </div>
+          </div>`;
+          return;
+        }
+        const pct = Math.round((d.best / d.total) * 100);
+        const barClass = pct === 100 ? 'perfect' : pct >= 60 ? 'high' : pct >= 40 ? 'mid' : 'low';
+        const plays = d.playCount || d.attempts || 1;
+        const lastDate = new Date(d.updatedAt || d.lastDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+        html += `<div class="stats-level-row">
+          <span class="stats-level-pill ${level}">${level}</span>
+          <div class="stats-bar-wrap">
+            <div class="stats-bar-fill ${barClass}" data-width="${pct}" style="width:0%"></div>
+          </div>
+          <div class="stats-meta">
+            <span class="stats-meta-score">${d.best}/${d.total} · ${pct}%</span>
+            <span class="stats-meta-sub">${plays} attempt${plays > 1 ? 's' : ''} · ${lastDate}</span>
+          </div>
+        </div>`;
+      });
+
+      html += `</div>`;
+    });
+
+    container.innerHTML = html;
+
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      container.querySelectorAll('.stats-bar-fill[data-width]').forEach(el => {
+        el.style.width = el.dataset.width + '%';
+      });
+    }));
+  }
+
+  render();
+
+  document.getElementById('reset-btn').addEventListener('click', () => {
+    if (confirm('Reset all your quiz history? This cannot be undone.')) {
+      resetAll();
+      render();
+    }
+  });
+</script>
+</body>
+</html>

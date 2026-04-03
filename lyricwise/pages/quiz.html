@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LyricWise — Quiz</title>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+<canvas id="confetti-canvas" style="position:fixed;inset:0;pointer-events:none;z-index:999;display:none;"></canvas>
+
+<!-- Floating video window -->
+<div id="float-player">
+  <div class="float-titlebar" id="float-titlebar">
+    <div class="float-title">
+      <div class="float-title-dot"></div>
+      <span id="float-title-text">YouTube</span>
+    </div>
+    <div class="float-controls">
+      <button class="float-ctrl-btn" id="float-minimize-btn" onclick="toggleFloatMinimize()" title="Minimize">&#9135;</button>
+      <button class="float-ctrl-btn close" onclick="closeFloat()" title="Close">&#x2715;</button>
+    </div>
+  </div>
+  <div class="float-video-area" id="float-video-area"></div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SCREEN 1 — Level selection
+════════════════════════════════════════ -->
+<div id="screen-level">
+  <nav id="main-nav"></nav>
+
+  <div class="level-header">
+    <button class="back-btn" onclick="lw.go('library')">← Back</button>
+    <div class="level-song-info">
+      <h1 id="level-song-title">Loading…</h1>
+      <p>Select your CEFR level to begin the quiz</p>
+    </div>
+  </div>
+
+  <div class="levels-container" id="level-grid">
+    <!-- Level options injected by JS -->
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SCREEN 2 — Quiz
+════════════════════════════════════════ -->
+<div id="screen-quiz" style="display:none;">
+
+  <!-- Top bar -->
+  <div class="quiz-top-bar">
+    <div class="quiz-info">
+      <span class="quiz-level-pill" id="quiz-level-pill">A1</span>
+      <span class="quiz-song-label" id="quiz-song-label"></span>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progress-bar"></div>
+    </div>
+    <div class="quiz-counter" id="quiz-counter">1 / 5</div>
+  </div>
+
+  <!-- Nav bar -->
+  <div class="quiz-nav-bar">
+    <div class="quiz-nav-links">
+      <button class="quiz-nav-btn" onclick="goToLibrary()">← Library</button>
+      <span class="quiz-nav-separator">/</span>
+      <button class="quiz-nav-btn" onclick="goToHome()">🏠 Home</button>
+    </div>
+    <span style="font-size:.78rem;color:var(--text-muted)">Quiz in progress</span>
+  </div>
+
+  <!-- Music player -->
+  <div class="music-player" id="music-player">
+    <div class="player-header" onclick="togglePlayerCollapse()">
+      <div class="player-header-left">
+        <div class="player-now-playing">
+          <span class="player-state-icon">
+            <span class="dot"></span>
+            <span class="pause-bars"><span></span><span></span></span>
+          </span>
+          <span id="player-status-label"></span>
+        </div>
+        <div>
+          <div class="player-song-name" id="player-song-name"></div>
+          <div class="player-song-artist" id="player-song-artist"></div>
+        </div>
+      </div>
+      <div class="player-header-right">
+        <div class="player-tabs" onclick="event.stopPropagation()">
+          <button class="player-tab active" id="tab-spotify" onclick="switchTab('spotify')">♫ Spotify</button>
+          <button class="player-tab" id="tab-youtube" onclick="switchTab('youtube')">▶ YouTube</button>
+        </div>
+        <button class="player-collapse-btn" id="player-collapse-icon" title="Show/hide player">▲</button>
+      </div>
+    </div>
+    <div class="player-body" id="player-body">
+      <div class="player-embed-panel active" id="embed-spotify"></div>
+      <div class="player-embed-panel" id="embed-youtube"></div>
+    </div>
+  </div>
+
+  <!-- Question area -->
+  <div class="quiz-body">
+    <div class="quiz-lyrics-box" id="quiz-lyrics-box">
+      <div class="quiz-lyrics-label">📖 Excerpt</div>
+      <div class="quiz-lyrics-text" id="quiz-lyrics"></div>
+    </div>
+
+    <div class="quiz-question" id="quiz-question"></div>
+
+    <div class="quiz-options" id="quiz-options"></div>
+
+    <div class="quiz-feedback" id="quiz-feedback"></div>
+
+    <button class="quiz-next-btn" id="quiz-next-btn" onclick="nextQuestion()">Next →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SCREEN 3 — Score
+════════════════════════════════════════ -->
+<div id="screen-score" style="display:none;">
+  <nav id="score-nav"></nav>
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:2rem;">
+    <div class="score-card">
+      <div class="score-emoji" id="score-emoji">😊</div>
+      <div class="score-title" id="score-title">Quiz Complete!</div>
+      <div class="score-record" id="score-record"></div>
+      <div class="score-fraction" id="score-fraction">0/5</div>
+      <div class="score-percent" id="score-percent">0%</div>
+      <div class="score-bar-wrap">
+        <div class="score-bar-fill" id="score-bar-fill" style="width:0%"></div>
+      </div>
+      <div class="score-message" id="score-message"></div>
+      <div class="score-actions">
+        <button class="btn-retry" onclick="retryQuiz()">↺ Try Again</button>
+        <button class="btn-library-back" onclick="lw.go('library')">← Library</button>
+        <button class="btn-library-back" onclick="lw.go('stats')" style="border-color:var(--blue-main);color:var(--blue-light)">📊 My Stats</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { router }                   from '../js/router.js';
+import { renderNav, launchConfetti } from '../js/ui.js';
+import { getSong, hasQuiz }         from '../data/index.js';
+import { getScore, saveScore }      from '../js/storage.js';
+import * as Quiz                    from '../js/quiz.js';
+import { loadSpotify, seek,
+         stopAll, openFloat,
+         closeFloat as _closeFloat,
+         getActiveTab, setActiveTab } from '../js/player.js';
+import { renderSeekHelper }         from '../js/seek.js';
+
+// ── State ─────────────────────────────────────────────────────────
+const params  = router.getParams();
+let song      = null;
+let currentLevel = null;
+let playerCollapsed = false;
+let floatMinimized  = false;
+
+// ── Init ──────────────────────────────────────────────────────────
+function init() {
+  if (!params.songId) { router.go('library'); return; }
+  song = getSong(params.songId);
+  if (!song) { router.go('library'); return; }
+
+  if (params.level) {
+    startQuiz(params.level);
+  } else {
+    showLevelScreen();
+  }
+}
+
+// ── Level screen ──────────────────────────────────────────────────
+function showLevelScreen() {
+  renderNav('library');
+  document.getElementById('level-song-title').innerHTML =
+    `${song.icon} ${song.title} — <em>${song.artist}</em>`;
+
+  const container = document.getElementById('level-grid');
+  const LEVELS = ['A1','A2','B1','B2','C1'];
+  const DESCS  = {
+    A1: 'Beginner — Basic vocabulary, simple present tense, everyday words',
+    A2: 'Elementary — Familiar expressions, simple sentences, basic grammar',
+    B1: 'Intermediate — Main ideas, descriptive language, figurative expressions',
+    B2: 'Upper Intermediate — Implicit meaning, complex grammar, nuanced vocabulary',
+    C1: 'Advanced — Idiomatic usage, literary analysis, subtle connotations',
+  };
+  const NAMES = { A1: 'Beginner', A2: 'Elementary', B1: 'Intermediate', B2: 'Upper Intermediate', C1: 'Advanced' };
+
+  LEVELS.forEach(lv => {
+    const available = hasQuiz(song.id, lv);
+    const best      = getScore(song.id, lv);
+    const div       = document.createElement('div');
+    div.className   = `level-option${available ? '' : ' disabled'}`;
+    if (!available) div.style.cssText = 'opacity:.45;cursor:default;pointer-events:none;';
+
+    const bestLabel = best
+      ? `Best: ${best.best}/${best.total}`
+      : available ? '—' : 'Coming soon';
+    const bestClass = best
+      ? (best.best === best.total ? 'level-best perfect' : 'level-best done')
+      : 'level-best';
+
+    div.innerHTML = `
+      <div class="level-option-left">
+        <div class="level-circle ${lv}">${lv}</div>
+        <div class="level-info">
+          <div class="level-name">${NAMES[lv]}</div>
+          <div class="level-desc">${DESCS[lv].split(' — ')[1] || ''}</div>
+        </div>
+      </div>
+      <span class="${bestClass}" id="best-${lv}">${bestLabel}</span>`;
+
+    if (available) {
+      div.addEventListener('click', () => startQuiz(lv));
+    }
+    container.appendChild(div);
+  });
+}
+
+// ── Quiz ──────────────────────────────────────────────────────────
+function startQuiz(level) {
+  if (!hasQuiz(song.id, level)) return;
+  currentLevel = level;
+
+  const ok = Quiz.init(song, level);
+  if (!ok) { router.go('library'); return; }
+
+  showScreen('quiz');
+  initPlayer();
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q    = Quiz.getCurrentQuestion();
+  const prog = Quiz.getProgress();
+
+  // Top bar
+  const pill = document.getElementById('quiz-level-pill');
+  pill.textContent = currentLevel;
+  pill.className   = `quiz-level-pill ${currentLevel}`;
+  document.getElementById('quiz-song-label').textContent  = `${song.title} — ${song.artist}`;
+  document.getElementById('quiz-counter').textContent     = `${prog.current} / ${prog.total}`;
+  document.getElementById('progress-bar').style.width     = `${(prog.current / prog.total) * 100}%`;
+
+  // Lyrics + seek helper
+  document.getElementById('quiz-lyrics').innerHTML = q.lyrics.replace(/\n/g, '<br>');
+  renderSeekHelper(q.timestamp || 0);
+
+  // Question
+  document.getElementById('quiz-question').textContent = q.question;
+
+  // Options
+  const letters = ['A', 'B', 'C', 'D'];
+  const optDiv  = document.getElementById('quiz-options');
+  optDiv.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-option';
+    btn.innerHTML = `<span class="option-letter">${letters[i]}</span> ${opt}`;
+    btn.addEventListener('click', () => selectAnswer(i));
+    optDiv.appendChild(btn);
+  });
+
+  // Reset feedback + next button
+  const fb = document.getElementById('quiz-feedback');
+  fb.className  = 'quiz-feedback';
+  fb.textContent = '';
+  document.getElementById('quiz-next-btn').className = 'quiz-next-btn';
+}
+
+function selectAnswer(index) {
+  const result = Quiz.answer(index);
+  if (!result) return;
+
+  const options = document.querySelectorAll('.quiz-option');
+  options.forEach(btn => btn.disabled = true);
+  options[Quiz.getCurrentQuestion().correct].classList.add('correct');
+  if (!result.correct) options[index].classList.add('incorrect');
+
+  const fb = document.getElementById('quiz-feedback');
+  fb.innerHTML  = result.correct
+    ? result.feedback
+    : result.feedback.replace(/^✅/, '❌');
+  fb.className  = `quiz-feedback ${result.correct ? 'correct' : 'incorrect'} show`;
+
+  document.getElementById('quiz-next-btn').className = 'quiz-next-btn show';
+}
+
+window.nextQuestion = function() {
+  const body = document.querySelector('.quiz-body');
+  body.classList.add('transitioning', 'slide-out');
+  setTimeout(() => {
+    body.classList.remove('slide-out');
+    const result = Quiz.next();
+    if (result.done) {
+      showScore(result.isNewRecord, result.score, result.total);
+    } else {
+      renderQuestion();
+    }
+    body.classList.add('slide-in');
+    setTimeout(() => body.classList.remove('slide-in', 'transitioning'), 380);
+  }, 260);
+};
+
+function showScore(isNewRecord, score, total) {
+  stopAll();
+
+  const pct = Math.round((score / total) * 100);
+  const emojis   = ['😔', '🙂', '😊', '🎯', '🏆'];
+  const titles   = ['Keep Practising!', 'Good Effort!', 'Well Done!', 'Great Work!', 'Outstanding!'];
+  const messages = [
+    "Don't give up — every attempt makes you stronger. Review the explanations and try again!",
+    "You're on the right track! A bit more practice and you'll nail it.",
+    "Solid performance! You have a good grasp of this level.",
+    "Impressive! You understand the lyrics deeply at this level.",
+    "Perfect score — you have truly mastered this level. Ready to go higher?"
+  ];
+  const tier = score === total ? 4 : score >= 4 ? 3 : score >= 3 ? 2 : score >= 2 ? 1 : 0;
+
+  document.getElementById('score-emoji').textContent    = emojis[tier];
+  document.getElementById('score-title').textContent    = titles[tier];
+  document.getElementById('score-fraction').textContent = `${score}/${total}`;
+  document.getElementById('score-percent').textContent  = `${pct}% correct`;
+  document.getElementById('score-message').textContent  = messages[tier];
+  document.getElementById('score-bar-fill').style.width = '0%';
+
+  const recordEl = document.getElementById('score-record');
+  if (isNewRecord) {
+    const saved = getScore(song.id, currentLevel);
+    const plays = saved?.playCount || 1;
+    recordEl.textContent = plays <= 1
+      ? '⭐ First attempt logged — come back to beat it!'
+      : `🏆 New Personal Best! (${score}/${total})`;
+    recordEl.classList.add('show');
+  } else {
+    recordEl.classList.remove('show');
+  }
+
+  showScreen('score');
+
+  const card = document.querySelector('.score-card');
+  card.classList.remove('animate-in');
+  void card.offsetWidth;
+  card.classList.add('animate-in');
+
+  if (score === total) {
+    setTimeout(() => launchConfetti(), 400);
+  }
+
+  setTimeout(() => {
+    document.getElementById('score-bar-fill').style.width = `${pct}%`;
+  }, 100);
+
+  const sn = document.getElementById('score-nav');
+  sn.innerHTML = document.getElementById('main-nav').innerHTML;
+}
+
+window.retryQuiz = function() {
+  startQuiz(currentLevel);
+};
+
+// ── Player ────────────────────────────────────────────────────────
+function initPlayer() {
+  document.getElementById('player-song-name').textContent   = song.title;
+  document.getElementById('player-song-artist').textContent = song.artist;
+
+  if (song.spotifyId) {
+    loadSpotify(song.spotifyId, e => {
+      const player = document.getElementById('music-player');
+      const label  = document.getElementById('player-status-label');
+      if (e.data.isPaused) {
+        player.classList.remove('playing');
+        player.classList.add('paused');
+        if (label) label.textContent = 'Paused';
+      } else {
+        player.classList.remove('paused');
+        player.classList.add('playing');
+        if (label) label.textContent = 'Now Playing';
+      }
+    });
+  }
+}
+
+window.switchTab = function(tab) {
+  setActiveTab(tab);
+  document.getElementById('tab-spotify').classList.toggle('active', tab === 'spotify');
+  document.getElementById('tab-youtube').classList.toggle('active', tab === 'youtube');
+  document.getElementById('embed-spotify').classList.toggle('active', tab === 'spotify');
+  document.getElementById('embed-youtube').classList.toggle('active', tab === 'youtube');
+
+  if (tab === 'youtube' && song.youtubeId) {
+    const panel    = document.getElementById('embed-youtube');
+    const watchUrl = `https://www.youtube.com/watch?v=${song.youtubeId}`;
+    panel.innerHTML = `
+      <div class="yt-music-card">
+        <div class="yt-music-visual">
+          <div class="yt-music-bars">
+            ${[...Array(7)].map(() => '<div class="yt-bar"></div>').join('')}
+          </div>
+          <div class="yt-music-icon">♪</div>
+        </div>
+        <div class="yt-music-info">
+          <div class="yt-music-title">${song.title}</div>
+          <div class="yt-music-artist">${song.artist}</div>
+          <div class="yt-music-note">Click Float Window to watch while doing the quiz 🎬</div>
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.4rem">
+            <button class="yt-float-btn" onclick="openFloatWindow()">⧉ Float Window</button>
+            <a class="yt-open-btn" href="${watchUrl}" target="_blank" rel="noopener">↗ YouTube</a>
+          </div>
+        </div>
+      </div>`;
+  }
+};
+
+window.openFloatWindow = function() {
+  openFloat(song.youtubeId, song.title, `https://www.youtube.com/watch?v=${song.youtubeId}`);
+};
+
+window.closeFloat = function() {
+  _closeFloat();
+};
+
+window.toggleFloatMinimize = function() {
+  const fp  = document.getElementById('float-player');
+  const btn = document.getElementById('float-minimize-btn');
+  floatMinimized = !floatMinimized;
+  fp.classList.toggle('minimized', floatMinimized);
+  btn.textContent = floatMinimized ? '□' : '─';
+};
+
+window.togglePlayerCollapse = function() {
+  playerCollapsed = !playerCollapsed;
+  const icon = document.getElementById('player-collapse-icon');
+  const mp   = document.getElementById('music-player');
+  icon.textContent = playerCollapsed ? '▼' : '▲';
+  mp.classList.toggle('collapsed', playerCollapsed);
+};
+
+// ── Navigation ────────────────────────────────────────────────────
+window.goToLibrary = function() {
+  if (confirm('Leave the quiz? Your progress will be lost.')) {
+    stopAll();
+    router.go('library');
+  }
+};
+
+window.goToHome = function() {
+  if (confirm('Leave the quiz? Your progress will be lost.')) {
+    stopAll();
+    router.go('home');
+  }
+};
+
+// ── Screen switching ──────────────────────────────────────────────
+function showScreen(name) {
+  document.getElementById('screen-level').style.display = name === 'level' ? '' : 'none';
+  document.getElementById('screen-quiz').style.display  = name === 'quiz'  ? '' : 'none';
+  document.getElementById('screen-score').style.display = name === 'score' ? '' : 'none';
+}
+
+// ── Start ─────────────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>

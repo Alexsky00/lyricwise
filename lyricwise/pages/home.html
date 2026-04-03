@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LyricWise — Learn English Through Music</title>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&display=swap" rel="stylesheet"/>
+</head>
+<body>
+<nav id="main-nav"></nav>
+
+<main class="home-main">
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">Learn English Through Music</div>
+      <h1 class="hero-title">Master English<br>with the songs<br>You <span class="accent">Love</span></h1>
+      <p class="hero-sub">LyricWise transforms your favourite lyrics into interactive English proficiency quizzes — from beginner to advanced.</p>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="lw.go('library')">🎵 Browse the Library</button>
+        <button class="btn-secondary" onclick="lw.go('stats')">📊 My Stats</button>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="guitar-container">
+        <div class="guitar-glow"></div>
+        <div class="guitar-emoji">🎸</div>
+        <div class="guitar-ring"></div>
+        <div class="guitar-ring"></div>
+        <div class="guitar-ring"></div>
+        <span class="note">♪</span>
+        <span class="note">♫</span>
+        <span class="note">♩</span>
+        <span class="note">♬</span>
+        <span class="note">♭</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="features-section">
+    <div class="features-inner">
+      <h2 class="features-title">Why LyricWise?</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🎯</div>
+          <div class="feature-title">5 CEFR Levels</div>
+          <div class="feature-desc">Every song comes with tailored quizzes from A1 (Beginner) to C1 (Advanced), so you always learn at your pace.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🎵</div>
+          <div class="feature-title">Real Lyrics</div>
+          <div class="feature-desc">Questions are built directly from authentic song lyrics — so vocabulary, grammar and context feel natural.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <div class="feature-title">Instant Feedback</div>
+          <div class="feature-desc">Get detailed explanations for every answer so you understand not just what is correct, but why.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🚀</div>
+          <div class="feature-title">Progress Tracking</div>
+          <div class="feature-desc">Track your score at every level and challenge yourself to improve as your English grows.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </section>
+</main>
+
+<script type="module">
+  import { renderNav } from '../js/ui.js';
+  renderNav('home');
+</script>
+</body>
+</html>

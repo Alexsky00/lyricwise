@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LyricWise — Admin</title>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&display=swap" rel="stylesheet"/>
+</head>
+<body>
+<nav id="main-nav"></nav>
+
+<main class="admin-main">
+  <div class="admin-header">
+    <div>
+      <h1>⚙ Admin</h1>
+      <p>Generate quiz questions for a new song using AI</p>
+    </div>
+    <span class="admin-badge">Prototype version</span>
+  </div>
+
+  <!-- STEP 1: Song info -->
+  <div class="admin-section">
+    <h2>① Song information</h2>
+    <div class="admin-grid">
+      <div class="admin-field">
+        <label>Title</label>
+        <input type="text" id="adm-title" placeholder="e.g. Let Her Go"/>
+      </div>
+      <div class="admin-field">
+        <label>Artist</label>
+        <input type="text" id="adm-artist" placeholder="e.g. Passenger"/>
+      </div>
+      <div class="admin-field">
+        <label>YouTube ID <span class="field-hint">(11 chars after watch?v=)</span></label>
+        <input type="text" id="adm-yt" placeholder="e.g. K4DyBUG242c" maxlength="11"/>
+      </div>
+      <div class="admin-field">
+        <label>Spotify ID <span class="field-hint">(after /track/)</span></label>
+        <input type="text" id="adm-sp" placeholder="e.g. 2uZWffKoemZDI0gHcBEcDc"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2: Icon -->
+  <div class="admin-section">
+    <h2>② Song icon</h2>
+    <div class="icon-picker" id="icon-picker">
+      <div class="icon-opt selected" data-icon="🎵">🎵</div>
+      <div class="icon-opt" data-icon="🎸">🎸</div>
+      <div class="icon-opt" data-icon="🎹">🎹</div>
+      <div class="icon-opt" data-icon="🎧">🎧</div>
+      <div class="icon-opt" data-icon="🎤">🎤</div>
+      <div class="icon-opt" data-icon="🎷">🎷</div>
+      <div class="icon-opt" data-icon="🎺">🎺</div>
+      <div class="icon-opt" data-icon="🎻">🎻</div>
+      <div class="icon-opt" data-icon="🥁">🥁</div>
+      <div class="icon-opt" data-icon="🪗">🪗</div>
+      <div class="icon-opt" data-icon="🎼">🎼</div>
+      <div class="icon-opt" data-icon="🎶">🎶</div>
+      <div class="icon-opt" data-icon="🌟">🌟</div>
+      <div class="icon-opt" data-icon="⭐">⭐</div>
+      <div class="icon-opt" data-icon="🔥">🔥</div>
+      <div class="icon-opt" data-icon="💫">💫</div>
+      <div class="icon-opt" data-icon="🦸">🦸</div>
+      <div class="icon-opt" data-icon="🚀">🚀</div>
+      <div class="icon-opt" data-icon="🌊">🌊</div>
+      <div class="icon-opt" data-icon="⚡">⚡</div>
+    </div>
+  </div>
+
+  <!-- STEP 3: Generate quiz -->
+  <div class="admin-section">
+    <h2>③ Generate quiz <span class="field-hint">— select levels to include</span></h2>
+    <div class="level-tabs" id="level-tabs">
+      <div class="level-tab active" data-level="A1">A1</div>
+      <div class="level-tab active" data-level="A2">A2</div>
+      <div class="level-tab active" data-level="B1">B1</div>
+      <div class="level-tab active" data-level="B2">B2</div>
+      <div class="level-tab active" data-level="C1">C1</div>
+    </div>
+    <p class="admin-hint">Paste the full song lyrics (used to generate questions):</p>
+    <textarea id="adm-lyrics" rows="6" placeholder="Paste the full lyrics here…"></textarea>
+    <div class="admin-actions">
+      <button class="admin-btn admin-btn-primary" id="gen-btn">✨ Generate quiz with AI →</button>
+      <span class="admin-hint">Opens a prompt to copy into Claude</span>
+    </div>
+    <div class="admin-status" id="gen-status"></div>
+    <pre class="admin-quiz-preview" id="quiz-preview"></pre>
+  </div>
+
+  <!-- STEP 4: Export files -->
+  <div class="admin-section">
+    <h2>④ Export files</h2>
+    <p class="admin-hint">Once the quiz is generated, download the two files to add to your project.</p>
+    <div class="admin-actions">
+      <button class="admin-btn admin-btn-primary" id="export-song-btn" disabled>↓ Download songs/[slug].js</button>
+      <button class="admin-btn admin-btn-secondary" id="export-quiz-btn" disabled>↓ Download quizzes/[slug].js</button>
+    </div>
+    <div class="admin-status" id="export-status"></div>
+
+    <div class="admin-instructions" id="export-instructions" style="display:none;">
+      <p><strong>Next steps:</strong></p>
+      <ol>
+        <li>Move both downloaded files into your project's <code>data/songs/</code> and <code>data/quizzes/</code> folders</li>
+        <li>Open <code>data/index.js</code> and add the two import lines shown below</li>
+        <li>Add the song to the <code>catalogue</code> array</li>
+        <li>Save, push to GitHub: <code>git add . && git commit -m "add [song]" && git push</code></li>
+      </ol>
+      <pre class="admin-code-snippet" id="index-snippet"></pre>
+    </div>
+  </div>
+
+  <!-- JSON paste modal (for file:// fallback) -->
+  <div id="json-modal" style="display:none;">
+    <div class="json-modal-inner">
+      <div class="json-modal-header">
+        <h3>📋 Paste AI-generated JSON</h3>
+        <button id="json-modal-close">✕</button>
+      </div>
+      <p class="admin-hint">Copy the prompt below, paste it into <strong>claude.ai</strong>, then paste the JSON response here.</p>
+      <div class="admin-field">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem;">
+          <label>Prompt to copy</label>
+          <button class="admin-btn-tiny" id="copy-prompt-btn">📋 Copy</button>
+        </div>
+        <pre id="modal-prompt" style="max-height:120px;overflow-y:auto;font-size:.75rem;"></pre>
+      </div>
+      <div class="admin-field">
+        <label>Paste JSON response here</label>
+        <textarea id="json-paste-input" rows="8" placeholder='{"A1":[{"lyrics":"...","question":"...","options":["A","B","C","D"],"correct":0,"timestamp":30,"feedback":"✅ ..."}]}'></textarea>
+      </div>
+      <div class="admin-actions">
+        <button class="admin-btn admin-btn-primary" id="import-json-btn">✓ Import JSON</button>
+        <button class="admin-btn admin-btn-secondary" id="cancel-json-btn">Cancel</button>
+      </div>
+      <div class="admin-status" id="modal-status"></div>
+    </div>
+  </div>
+</main>
+
+<script type="module">
+import { renderNav } from '../js/ui.js';
+renderNav('admin');
+
+// ── State ─────────────────────────────────────────────────────────
+let selectedIcon  = '🎵';
+let generatedQuiz = null;
+let generatedSlug = null;
+let promptText    = '';
+
+// ── Icon picker ───────────────────────────────────────────────────
+document.getElementById('icon-picker').addEventListener('click', e => {
+  const opt = e.target.closest('.icon-opt');
+  if (!opt) return;
+  document.querySelectorAll('.icon-opt').forEach(o => o.classList.remove('selected'));
+  opt.classList.add('selected');
+  selectedIcon = opt.dataset.icon;
+});
+
+// ── Level tabs ────────────────────────────────────────────────────
+document.getElementById('level-tabs').addEventListener('click', e => {
+  const tab = e.target.closest('.level-tab');
+  if (tab) tab.classList.toggle('active');
+});
+
+// ── Helpers ───────────────────────────────────────────────────────
+function slugify(str) {
+  return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+function setStatus(id, type, msg) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.className = `admin-status ${type}`;
+  el.textContent = msg;
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function getSelectedLevels() {
+  return [...document.querySelectorAll('.level-tab.active')].map(t => t.dataset.level);
+}
+
+// ── Quiz generation ───────────────────────────────────────────────
+document.getElementById('gen-btn').addEventListener('click', generateQuiz);
+
+async function generateQuiz() {
+  const title  = document.getElementById('adm-title').value.trim();
+  const artist = document.getElementById('adm-artist').value.trim();
+  const lyrics = document.getElementById('adm-lyrics').value.trim();
+  const levels = getSelectedLevels();
+
+  if (!title || !artist) { setStatus('gen-status', 'error', 'Title and artist are required.'); return; }
+  if (!lyrics)           { setStatus('gen-status', 'error', 'Lyrics are required.'); return; }
+  if (!levels.length)    { setStatus('gen-status', 'error', 'Select at least one level.'); return; }
+
+  const snippet = lyrics.length > 800 ? lyrics.slice(0, 800) + '…' : lyrics;
+  promptText = `You are an English teaching assistant. Generate quiz questions for the song "${title}" by ${artist}.
+
+LYRICS:
+${snippet}
+
+Generate 5 multiple-choice questions for each of these CEFR levels: ${levels.join(', ')}.
+
+For each question provide:
+- lyrics: 2-4 lines from the song as excerpt
+- question: a comprehension or vocabulary question
+- options: array of 4 answers
+- correct: index (0-3) of the correct answer
+- timestamp: estimated position in seconds in the song
+- feedback: explanation starting with ✅
+
+Respond ONLY with a valid JSON object. No markdown, no backticks. Example:
+{"A1":[{"lyrics":"line1\\nline2","question":"What does X mean?","options":["A","B","C","D"],"correct":1,"timestamp":30,"feedback":"✅ Explanation."}],"A2":[...]}
+
+Only include levels: ${levels.join(', ')}`;
+
+  // Direct API calls are blocked by CORS on static sites — always use the paste modal.
+  showPasteModal();
+}
+
+function applyGeneratedQuiz(parsed, levels) {
+  generatedQuiz = parsed;
+  generatedSlug = slugify(document.getElementById('adm-title').value.trim());
+
+  const preview = document.getElementById('quiz-preview');
+  const first   = Object.values(parsed)[0]?.[0];
+  preview.textContent = `// Preview — first question:\n${JSON.stringify(first, null, 2)}\n\n// ${levels.length} levels × 5 questions generated`;
+  preview.style.display = 'block';
+
+  setStatus('gen-status', 'success', `✅ Quiz generated — ${levels.length} levels × 5 questions`);
+  document.getElementById('export-song-btn').disabled = false;
+  document.getElementById('export-quiz-btn').disabled = false;
+  buildIndexSnippet();
+}
+
+// ── Export files ──────────────────────────────────────────────────
+document.getElementById('export-song-btn').addEventListener('click', exportSongFile);
+document.getElementById('export-quiz-btn').addEventListener('click', exportQuizFile);
+
+function exportSongFile() {
+  const title  = document.getElementById('adm-title').value.trim();
+  const artist = document.getElementById('adm-artist').value.trim();
+  const ytId   = document.getElementById('adm-yt').value.trim();
+  const spId   = document.getElementById('adm-sp').value.trim();
+  const slug   = generatedSlug || slugify(title);
+
+  const content = `// data/songs/${slug}.js
+export const song = {
+  id:        '${slug}',
+  title:     '${title.replace(/'/g, "\\'")}',
+  artist:    '${artist.replace(/'/g, "\\'")}',
+  icon:      '${selectedIcon}',
+  youtubeId: '${ytId}',
+  spotifyId: '${spId}',
+};\n`;
+
+  downloadFile(`${slug}.js`, content);
+  setStatus('export-status', 'success', `✅ songs/${slug}.js downloaded — move it to data/songs/`);
+  document.getElementById('export-instructions').style.display = 'block';
+}
+
+function exportQuizFile() {
+  if (!generatedQuiz) { setStatus('export-status', 'error', 'Generate the quiz first.'); return; }
+  const slug    = generatedSlug;
+  const title   = document.getElementById('adm-title').value.trim();
+  const artist  = document.getElementById('adm-artist').value.trim();
+  const content = `// data/quizzes/${slug}.js\n// Questions for ${title} — ${artist}\n\nexport const quiz = ${JSON.stringify(generatedQuiz, null, 2)};\n`;
+
+  downloadFile(`${slug}-quiz.js`, content);
+  setStatus('export-status', 'success', `✅ quizzes/${slug}.js downloaded — move it to data/quizzes/`);
+  document.getElementById('export-instructions').style.display = 'block';
+}
+
+function downloadFile(filename, content) {
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(new Blob([content], { type: 'text/javascript' }));
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(a.href); }, 100);
+}
+
+function buildIndexSnippet() {
+  const slug    = generatedSlug;
+  const varName = slug.replace(/-/g, '_');
+  document.getElementById('index-snippet').textContent =
+`// In data/index.js — add these lines:
+
+import { song as ${varName} }     from './songs/${slug}.js';
+import { quiz as ${varName}Quiz } from './quizzes/${slug}.js';
+
+// Then in the catalogue array:
+{ ...${varName}, quiz: ${varName}Quiz },`;
+}
+
+// ── Paste modal (file:// fallback) ────────────────────────────────
+function showPasteModal() {
+  document.getElementById('modal-prompt').textContent = promptText;
+  document.getElementById('json-paste-input').value  = '';
+  const ms = document.getElementById('modal-status');
+  ms.className = 'admin-status'; ms.textContent = '';
+  document.getElementById('json-modal').style.display = 'flex';
+}
+
+document.getElementById('json-modal-close').addEventListener('click',  closeModal);
+document.getElementById('cancel-json-btn').addEventListener('click',   closeModal);
+function closeModal() { document.getElementById('json-modal').style.display = 'none'; }
+
+document.getElementById('copy-prompt-btn').addEventListener('click', () => {
+  navigator.clipboard?.writeText(promptText).then(() => {
+    const btn = document.getElementById('copy-prompt-btn');
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => { btn.textContent = '📋 Copy'; }, 2000);
+  });
+});
+
+document.getElementById('import-json-btn').addEventListener('click', () => {
+  const raw = document.getElementById('json-paste-input').value.trim();
+  if (!raw) { setStatus('modal-status', 'error', 'Paste a JSON response first.'); return; }
+  try {
+    const parsed = JSON.parse(raw.replace(/```json|```/g, '').trim());
+    const levels = Object.keys(parsed);
+    if (!levels.length) throw new Error('Empty object');
+    levels.forEach(lv => {
+      if (!Array.isArray(parsed[lv]) || !parsed[lv].length) throw new Error(`Level ${lv} has no questions`);
+      parsed[lv].forEach((q, i) => {
+        if (!q.lyrics || !q.question || !q.options || q.correct === undefined)
+          throw new Error(`Question ${i+1} in ${lv} is missing fields`);
+      });
+    });
+    applyGeneratedQuiz(parsed, levels);
+    closeModal();
+  } catch (e) {
+    setStatus('modal-status', 'error', `❌ Invalid JSON: ${e.message}`);
+  }
+});
+</script>
+</body>
+</html>
