@@ -286,8 +286,8 @@ function selectAnswer(index) {
 
   const fb = document.getElementById('quiz-feedback');
   fb.innerHTML  = result.correct
-    ? result.feedback
-    : result.feedback.replace(/^✅/, '❌');
+    ? result.feedback.replace(/^❌/, '✅')
+    : result.feedback;
   fb.className  = `quiz-feedback ${result.correct ? 'correct' : 'incorrect'} show`;
 
   document.getElementById('quiz-next-btn').className = 'quiz-next-btn show';
