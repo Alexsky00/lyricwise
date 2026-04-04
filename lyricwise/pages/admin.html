@@ -200,7 +200,9 @@
 <script type="module">
 import { renderNav, renderFooter, APP_VERSION } from '../js/ui.js';
 import { catalogue, hasQuiz } from '../data/index.js';
-renderNav('admin');
+import { requireAuth } from '../js/auth.js';
+const { profile: _navProfile } = await requireAuth();
+renderNav('admin', _navProfile);
 renderFooter();
 
 // ── Password gate ─────────────────────────────────────────────────

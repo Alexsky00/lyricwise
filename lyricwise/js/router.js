@@ -2,7 +2,7 @@
 // Handles navigation between pages.
 // Usage: router.go('library') or router.go('quiz', { songId: 'carry-on', level: 'A1' })
 
-const PAGES = ['home', 'library', 'quiz', 'stats', 'admin'];
+const PAGES = ['home', 'library', 'quiz', 'stats', 'admin', 'login', 'profile'];
 
 function go(page, params = {}) {
   if (!PAGES.includes(page)) {

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LyricWise — Profile</title>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&display=swap" rel="stylesheet"/>
+</head>
+<body>
+<nav id="main-nav"></nav>
+
+<main class="profile-main">
+
+  <!-- ── Profile header ── -->
+  <div class="profile-hero">
+    <div class="profile-avatar-display" id="profile-avatar-display">😎</div>
+    <div class="profile-hero-info">
+      <h1 class="profile-hero-name" id="profile-hero-name">Loading…</h1>
+      <p class="profile-hero-username" id="profile-hero-username">@username</p>
+      <p class="profile-hero-email"   id="profile-hero-email">email</p>
+    </div>
+  </div>
+
+  <div class="profile-sections">
+
+    <!-- ── Change pseudo ── -->
+    <div class="profile-section">
+      <h2 class="profile-section-title">Display name</h2>
+      <p class="profile-section-desc">This is the name shown throughout the app.</p>
+      <div class="profile-input-row">
+        <input type="text" id="ps-pseudo" placeholder="Your display name" maxlength="32"/>
+        <button class="btn-primary profile-save-btn" id="save-pseudo-btn">Save</button>
+      </div>
+      <p class="profile-msg" id="pseudo-msg"></p>
+    </div>
+
+    <!-- ── Change avatar ── -->
+    <div class="profile-section">
+      <h2 class="profile-section-title">Profile avatar</h2>
+      <p class="profile-section-desc">Pick an emoji that represents you.</p>
+      <div class="smiley-picker" id="profile-smiley-picker"></div>
+      <button class="btn-primary profile-save-btn" id="save-smiley-btn" style="margin-top:.9rem;">Save avatar</button>
+      <p class="profile-msg" id="smiley-msg"></p>
+    </div>
+
+    <!-- ── Change password ── -->
+    <div class="profile-section">
+      <h2 class="profile-section-title">Change password</h2>
+      <p class="profile-section-desc">You'll need to enter your current password to confirm.</p>
+      <div class="profile-field-stack">
+        <input type="password" id="ps-current-pw" placeholder="Current password" autocomplete="current-password"/>
+        <input type="password" id="ps-new-pw"      placeholder="New password (min. 6 chars)" autocomplete="new-password"/>
+        <input type="password" id="ps-confirm-pw"  placeholder="Confirm new password" autocomplete="new-password"/>
+      </div>
+      <button class="btn-primary profile-save-btn" id="save-pw-btn">Change password</button>
+      <p class="profile-msg" id="pw-msg"></p>
+    </div>
+
+  </div>
+</main>
+
+<footer id="main-footer"></footer>
+
+<script type="module">
+import { requireAuth, updateProfile, changePassword, getCurrentProfile } from '../js/auth.js';
+import { renderNav, renderFooter } from '../js/ui.js';
+
+const { profile } = await requireAuth();
+renderNav('profile', profile);
+renderFooter();
+
+// ── Fill in current values ────────────────────────────────────────
+document.getElementById('profile-avatar-display').textContent = profile.smiley;
+document.getElementById('profile-hero-name').textContent      = profile.pseudo;
+document.getElementById('profile-hero-username').textContent  = `@${profile.username}`;
+document.getElementById('profile-hero-email').textContent     = profile.email;
+document.getElementById('ps-pseudo').value                    = profile.pseudo;
+
+// ── Smiley picker ─────────────────────────────────────────────────
+const SMILEYS = [
+  '😀','😎','🤩','🥳','😇','🤓','😏','🤗',
+  '😤','🥶','🤪','😈','👻','🤖','👽','🎃',
+  '🦊','🐱','🐶','🦁','🐼','🐸','🐧','🦄',
+  '🌟','🔥','💎','⚡','🎵','🎸','🎧','🏆',
+];
+let selectedSmiley = profile.smiley;
+const picker = document.getElementById('profile-smiley-picker');
+SMILEYS.forEach(s => {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'smiley-opt';
+  btn.textContent = s;
+  if (s === selectedSmiley) btn.classList.add('selected');
+  btn.addEventListener('click', () => {
+    picker.querySelectorAll('.smiley-opt').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedSmiley = s;
+  });
+  picker.appendChild(btn);
+});
+
+// ── Helpers ───────────────────────────────────────────────────────
+function setMsg(id, text, type) {
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.className = `profile-msg ${type}`;
+  if (type === 'success') setTimeout(() => { el.textContent = ''; el.className = 'profile-msg'; }, 3000);
+}
+
+// ── Save pseudo ───────────────────────────────────────────────────
+document.getElementById('save-pseudo-btn').addEventListener('click', async () => {
+  const val = document.getElementById('ps-pseudo').value.trim();
+  if (val.length < 2) { setMsg('pseudo-msg', 'Pseudo must be at least 2 characters.', 'error'); return; }
+  try {
+    await updateProfile({ pseudo: val });
+    document.getElementById('profile-avatar-display').textContent = getCurrentProfile()?.smiley ?? selectedSmiley;
+    document.getElementById('profile-hero-name').textContent = val;
+    setMsg('pseudo-msg', '✓ Display name updated!', 'success');
+  } catch {
+    setMsg('pseudo-msg', 'Failed to update. Try again.', 'error');
+  }
+});
+
+// ── Save smiley ───────────────────────────────────────────────────
+document.getElementById('save-smiley-btn').addEventListener('click', async () => {
+  try {
+    await updateProfile({ smiley: selectedSmiley });
+    document.getElementById('profile-avatar-display').textContent = selectedSmiley;
+    setMsg('smiley-msg', '✓ Avatar updated!', 'success');
+  } catch {
+    setMsg('smiley-msg', 'Failed to update. Try again.', 'error');
+  }
+});
+
+// ── Change password ───────────────────────────────────────────────
+document.getElementById('save-pw-btn').addEventListener('click', async () => {
+  const current = document.getElementById('ps-current-pw').value;
+  const newPw   = document.getElementById('ps-new-pw').value;
+  const confirm = document.getElementById('ps-confirm-pw').value;
+
+  if (newPw.length < 6)    { setMsg('pw-msg', 'New password must be at least 6 characters.', 'error'); return; }
+  if (newPw !== confirm)   { setMsg('pw-msg', 'Passwords do not match.', 'error'); return; }
+  if (!current)            { setMsg('pw-msg', 'Enter your current password.', 'error'); return; }
+
+  const btn = document.getElementById('save-pw-btn');
+  btn.disabled = true;
+  btn.textContent = 'Changing…';
+  try {
+    await changePassword(current, newPw);
+    document.getElementById('ps-current-pw').value = '';
+    document.getElementById('ps-new-pw').value      = '';
+    document.getElementById('ps-confirm-pw').value  = '';
+    setMsg('pw-msg', '✓ Password changed!', 'success');
+  } catch (ex) {
+    const map = {
+      'auth/wrong-password':        'Current password is incorrect.',
+      'auth/weak-password':         'New password is too weak.',
+      'auth/requires-recent-login': 'Please sign out and sign back in first.',
+      'auth/invalid-credential':    'Current password is incorrect.',
+    };
+    setMsg('pw-msg', map[ex.code] || 'Failed to change password.', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Change password';
+  }
+});
+</script>
+</body>
+</html>

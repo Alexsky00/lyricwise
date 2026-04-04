@@ -22,26 +22,30 @@ https://alexsky00.github.io/lyricwise/
 
 ```
 lyricwise/
-├── index.html          ← entry point (redirects to home)
+├── index.html               ← entry point (redirects to home)
 ├── css/
-│   └── style.css       ← all styles
+│   └── style.css            ← all styles
 ├── pages/
 │   ├── home.html
 │   ├── library.html
 │   ├── quiz.html
 │   ├── stats.html
-│   └── admin.html
+│   ├── admin.html
+│   ├── login.html           ← sign-in / register page
+│   └── profile.html         ← edit pseudo, avatar, password
 ├── js/
-│   ├── router.js       ← navigation between pages
-│   ├── quiz.js         ← quiz state and logic
-│   ├── player.js       ← Spotify + YouTube embeds
-│   ├── storage.js      ← localStorage (scores)
-│   ├── ui.js           ← nav, confetti, toast
-│   └── seek.js         ← excerpt seek helper
+│   ├── router.js            ← navigation between pages
+│   ├── quiz.js              ← quiz state and logic
+│   ├── player.js            ← Spotify + YouTube embeds
+│   ├── storage.js           ← localStorage (scores, per-user namespaced)
+│   ├── ui.js                ← nav, confetti, toast
+│   ├── seek.js              ← excerpt seek helper
+│   ├── auth.js              ← Firebase Auth + Firestore profile logic
+│   └── firebase-config.js   ← Firebase project credentials (fill before deploy)
 └── data/
-    ├── index.js        ← assembles all songs — edit this to add a song
-    ├── songs/          ← one file per song (metadata only)
-    └── quizzes/        ← one file per song (questions only)
+    ├── index.js             ← assembles all songs — edit this to add a song
+    ├── songs/               ← one file per song (metadata only)
+    └── quizzes/             ← one file per song (questions only)
 ```
 
 ---
@@ -91,6 +95,62 @@ lyricwise/
 
 ---
 
+## Authentication (Firebase)
+
+LyricWise uses **Firebase Authentication** (Email/Password) and **Firestore** for user profiles.
+
+### First-time setup
+
+1. Create a Firebase project at [console.firebase.google.com](https://console.firebase.google.com)
+2. Add a Web app → copy the `firebaseConfig` into `js/firebase-config.js`
+3. **Authentication** → Sign-in method → enable **Email/Password**
+4. **Firestore Database** → Create database → start in **test mode**
+
+### Auth flow
+
+- All pages call `await requireAuth()` at load time — unauthenticated users are redirected
+  to `pages/login.html`
+- `pages/login.html` uses `checkAuth()` instead (no redirect — stays on the login page if
+  not signed in)
+- After sign-in/register, `auth.js` caches the profile in `localStorage` under
+  `lw_profile_cache` so `renderNav()` can read it synchronously
+
+### Profile data (Firestore)
+
+Each user document is stored at `users/{uid}` with:
+
+| Field | Type | Description |
+|---|---|---|
+| `uid` | string | Firebase Auth UID |
+| `email` | string | Registration email |
+| `username` | string | Unique identifier (`[a-zA-Z0-9_]+`) |
+| `pseudo` | string | Display name shown in the UI |
+| `smiley` | string | Emoji avatar (e.g. `"😎"`) |
+| `createdAt` | number | Unix timestamp |
+
+### Score namespacing
+
+Quiz scores are stored in `localStorage` under `lw_<uid>_<songId>_<level>`.
+`storage.js` exports `setCurrentUserId(uid)` — called by `auth.js` on every auth state
+change. Each account sees only its own scores.
+
+### Key exports from `js/auth.js`
+
+| Export | Usage |
+|---|---|
+| `requireAuth()` | Protected pages — redirects to login if not signed in |
+| `checkAuth()` | Login page only — resolves without redirecting |
+| `register({email, password, username, pseudo, smiley})` | Create account |
+| `login(email, password)` | Sign in |
+| `logout()` | Sign out |
+| `updateProfile(changes)` | Patch Firestore profile + local cache |
+| `changePassword(currentPw, newPw)` | Re-authenticates then updates password |
+| `getCurrentUser()` | Firebase Auth user object |
+| `getCurrentProfile()` | Firestore profile object |
+| `getCachedProfile()` | Sync read from `lw_profile_cache` |
+
+---
+
 ## Light / Dark mode
 
 The app ships with a dark theme by default. A ⚙ button at the right of the nav bar opens a
@@ -113,7 +173,7 @@ Both themes share the same blue accent variables (`--blue-main`, `--blue-light`,
 The version string is defined in `js/ui.js`:
 
 ```js
-export const APP_VERSION = '1.3-Alpha';
+export const APP_VERSION = '1.4-Alpha';
 ```
 
 It is automatically displayed in:

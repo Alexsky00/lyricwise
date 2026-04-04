@@ -27,23 +27,61 @@ export function toggleTheme() {
 
 // ── Nav ──────────────────────────────────────────────────────────
 
-export function renderNav(activePage) {
+/**
+ * @param {string} activePage
+ * @param {object|null} profile  — Firestore profile object (optional)
+ */
+export function renderNav(activePage, profile = null) {
   const nav = document.getElementById('main-nav');
   if (!nav) return;
   const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+
+  // Build user section for settings popover
+  const userSection = profile ? `
+    <div class="settings-user">
+      <div class="settings-user-avatar">${profile.smiley}</div>
+      <div class="settings-user-info">
+        <div class="settings-user-pseudo">${profile.pseudo}</div>
+        <div class="settings-user-email">${profile.email}</div>
+      </div>
+    </div>
+    <div class="settings-divider"></div>` : '';
+
+  const profileLink = profile ? `
+    <div class="settings-row settings-link-row" onclick="lw.go('profile')" style="cursor:pointer;">
+      <span class="settings-row-label">👤 Edit Profile</span>
+      <span class="settings-arrow">›</span>
+    </div>` : '';
+
+  const authRow = profile
+    ? `<div class="settings-row settings-link-row settings-logout-row" onclick="lw.signOut()" style="cursor:pointer;">
+         <span class="settings-row-label">🚪 Sign out</span>
+       </div>`
+    : `<div class="settings-row settings-link-row" onclick="lw.go('login')" style="cursor:pointer;">
+         <span class="settings-row-label">🔑 Sign in</span>
+       </div>`;
+
+  // User button label (smiley or generic gear)
+  const userBtnContent = profile
+    ? `<span class="nav-user-smiley">${profile.smiley}</span><span class="nav-user-pseudo">${profile.pseudo}</span>`
+    : `⚙`;
+
   nav.innerHTML = `
     <a class="nav-logo" href="#" onclick="event.preventDefault(); lw.go('home')">
       🎵 Lyric<span>Wise</span>
     </a>
     <div class="nav-links">
-      <a class="${activePage === 'home'  ? 'active' : ''}" href="#" onclick="event.preventDefault(); lw.go('home')">Home</a>
-      <a class="${activePage === 'stats' ? 'active' : ''}" href="#" onclick="event.preventDefault(); lw.go('stats')">Stats</a>
+      <a class="${activePage === 'home'    ? 'active' : ''}" href="#" onclick="event.preventDefault(); lw.go('home')">Home</a>
+      <a class="${activePage === 'stats'   ? 'active' : ''}" href="#" onclick="event.preventDefault(); lw.go('stats')">Stats</a>
       <a class="nav-cta${activePage === 'library' ? ' active' : ''}" href="#" onclick="event.preventDefault(); lw.go('library')">Browse Songs</a>
       <a class="nav-admin" href="#" onclick="event.preventDefault(); lw.go('admin')">Admin</a>
       <div style="position:relative;">
-        <button class="nav-settings-btn" id="settings-btn" title="Settings" onclick="lw.toggleSettings()">⚙</button>
+        <button class="nav-settings-btn${profile ? ' nav-user-btn' : ''}" id="settings-btn" title="Settings" onclick="lw.toggleSettings()">
+          ${userBtnContent}
+        </button>
         <div class="settings-popover" id="settings-popover" style="display:none;">
           <div class="settings-popover-title">Settings</div>
+          ${userSection}
           <div class="settings-row">
             <span class="settings-row-label">☀️ Light mode</span>
             <label class="theme-toggle">
@@ -51,6 +89,8 @@ export function renderNav(activePage) {
               <span class="theme-toggle-track"></span>
             </label>
           </div>
+          ${profileLink}
+          ${authRow}
         </div>
       </div>
     </div>
@@ -71,6 +111,12 @@ export function renderFooter() {
 window.lw = {
   go:            (page, params) => router.go(page, params),
   toggleTheme:   () => toggleTheme(),
+  signOut:       async () => {
+    // Dynamically import to avoid circular deps at load time
+    const { logout } = await import('./auth.js');
+    await logout();
+    router.go('login');
+  },
   toggleSettings: () => {
     const pop = document.getElementById('settings-popover');
     if (!pop) return;

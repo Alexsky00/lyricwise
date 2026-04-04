@@ -26,8 +26,10 @@
   import { renderNav, renderFooter } from '../js/ui.js';
   import { catalogue, hasQuiz } from '../data/index.js';
   import { getAllScores, resetAll } from '../js/storage.js';
+  import { requireAuth } from '../js/auth.js';
 
-  renderNav('stats');
+  const { profile } = await requireAuth();
+  renderNav('stats', profile);
   renderFooter();
 
   const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1'];

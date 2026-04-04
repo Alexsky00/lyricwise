@@ -32,8 +32,10 @@
   import { catalogue, hasQuiz } from '../data/index.js';
   import { hasAnyScore } from '../js/storage.js';
   import { router } from '../js/router.js';
+  import { requireAuth } from '../js/auth.js';
 
-  renderNav('library');
+  const { profile } = await requireAuth();
+  renderNav('library', profile);
   renderFooter();
 
   const grid = document.getElementById('songs-grid');

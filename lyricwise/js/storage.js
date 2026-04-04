@@ -1,11 +1,25 @@
 // js/storage.js
 // All localStorage access lives here.
 // No other module should read/write localStorage directly.
+//
+// Scores are namespaced per user: lw_<uid>_<songId>_<level>
+// Call setCurrentUserId(uid) after sign-in so all reads/writes use that user.
 
-const PREFIX = 'lw_';
+const BASE_PREFIX = 'lw_';
+
+let _uid = null;
+
+/** Called by auth.js after sign-in / sign-out. */
+export function setCurrentUserId(uid) {
+  _uid = uid;
+}
+
+function prefix() {
+  return _uid ? `${BASE_PREFIX}${_uid}_` : BASE_PREFIX;
+}
 
 function key(songId, level) {
-  return `${PREFIX}${songId}_${level}`;
+  return `${prefix()}${songId}_${level}`;
 }
 
 export function saveScore(songId, level, score, total) {
@@ -34,12 +48,13 @@ export function hasAnyScore(songId) {
 }
 
 export function getAllScores() {
+  const userPrefix = prefix();
   const result = {};
   for (let i = 0; i < localStorage.length; i++) {
     const k = localStorage.key(i);
-    if (!k.startsWith(PREFIX)) continue;
-    const rest = k.slice(PREFIX.length);          // e.g. "carry-on_A1"
-    const sep  = rest.lastIndexOf('_');
+    if (!k.startsWith(userPrefix)) continue;
+    const rest   = k.slice(userPrefix.length);   // e.g. "carry-on_A1"
+    const sep    = rest.lastIndexOf('_');
     const songId = rest.slice(0, sep);
     const level  = rest.slice(sep + 1);
     if (!result[songId]) result[songId] = {};
@@ -49,10 +64,11 @@ export function getAllScores() {
 }
 
 export function resetAll() {
+  const userPrefix = prefix();
   const keysToRemove = [];
   for (let i = 0; i < localStorage.length; i++) {
     const k = localStorage.key(i);
-    if (k.startsWith(PREFIX)) keysToRemove.push(k);
+    if (k.startsWith(userPrefix)) keysToRemove.push(k);
   }
   keysToRemove.forEach(k => localStorage.removeItem(k));
 }

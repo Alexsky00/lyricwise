@@ -2,6 +2,64 @@
 
 ---
 
+## v1.4-Alpha
+*April 2026*
+
+---
+
+### New features
+
+**User accounts — Firebase Authentication**
+LyricWise now has a full account system powered by Firebase Auth (Email/Password) and
+Firestore for profile storage. Every page requires sign-in; unauthenticated users are
+redirected to the login page.
+
+**Sign-in / Registration page** (`pages/login.html`)
+A dedicated auth page with two tabs:
+- **Sign in** — email + password
+- **Create account** — email, username, password, pseudo, and a smiley avatar picker
+
+Registration validates username format (`[a-zA-Z0-9_]+`) and pseudo length client-side
+before hitting Firebase. Firebase errors are mapped to human-readable messages.
+
+**Smiley avatar picker**
+Users choose a profile emoji from a grid of 32 options (faces, animals, objects).
+The same picker is reused on the registration and profile pages. Selected state is
+highlighted with a blue border and glow.
+
+**Profile page** (`pages/profile.html`)
+Accessible from the settings popover. Lets signed-in users change:
+- **Pseudo** (display name) — min. 2 characters
+- **Smiley avatar** — same picker as registration
+- **Password** — requires current password for re-authentication before updating
+
+**User info in the nav bar**
+When signed in, the ⚙ button is replaced by a pill showing the user's smiley + pseudo.
+Clicking it opens the settings popover, which now shows the user's avatar, pseudo and
+email at the top, followed by theme toggle, "Edit Profile" link, and "Sign out".
+
+**Per-user score isolation**
+Quiz scores in `localStorage` are now namespaced by Firebase UID
+(`lw_<uid>_<songId>_<level>`). Multiple accounts on the same browser each see only
+their own stats. `storage.js` exposes `setCurrentUserId(uid)`, called automatically
+by `auth.js` on sign-in/out.
+
+---
+
+### Technical changes
+
+- `js/firebase-config.js` — Firebase project config (fill in before deploy)
+- `js/auth.js` — central auth module: `register`, `login`, `logout`, `updateProfile`,
+  `changePassword`, `requireAuth` (guard), `checkAuth` (login page only)
+- `js/router.js` — `login` and `profile` added to the page list
+- `js/ui.js` — `renderNav(activePage, profile)` now accepts an optional profile object;
+  `lw.signOut()` added to the global shortcut object
+- All existing pages — import and `await requireAuth()` added; profile passed to `renderNav`
+
+---
+
+---
+
 ## v1.3-Alpha
 *April 2026*
 

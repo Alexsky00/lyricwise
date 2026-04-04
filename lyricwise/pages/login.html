@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LyricWise — Sign in</title>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+<div class="auth-page">
+  <div class="auth-card">
+
+    <!-- Logo -->
+    <div class="auth-logo">🎵 Lyric<span>Wise</span></div>
+    <p class="auth-tagline">Learn English through music</p>
+
+    <!-- Tabs -->
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-tab="signin">Sign in</button>
+      <button class="auth-tab"        data-tab="register">Create account</button>
+    </div>
+
+    <!-- ── Sign-in form ── -->
+    <form id="signin-form" class="auth-form">
+      <div class="auth-field">
+        <label>Email</label>
+        <input type="email" id="si-email" placeholder="you@example.com" autocomplete="email" required/>
+      </div>
+      <div class="auth-field">
+        <label>Password</label>
+        <input type="password" id="si-password" placeholder="••••••••" autocomplete="current-password" required/>
+      </div>
+      <button type="submit" class="btn-primary auth-submit" id="si-btn">Sign in →</button>
+      <p class="auth-error" id="si-error"></p>
+    </form>
+
+    <!-- ── Register form ── -->
+    <form id="register-form" class="auth-form" style="display:none;">
+      <div class="auth-field">
+        <label>Email</label>
+        <input type="email" id="reg-email" placeholder="you@example.com" autocomplete="email" required/>
+      </div>
+      <div class="auth-field">
+        <label>Username <span class="auth-hint">Letters, numbers and _ only</span></label>
+        <input type="text" id="reg-username" placeholder="john_doe" autocomplete="username" pattern="[a-zA-Z0-9_]+" required/>
+      </div>
+      <div class="auth-field">
+        <label>Password <span class="auth-hint">At least 6 characters</span></label>
+        <input type="password" id="reg-password" placeholder="••••••••" autocomplete="new-password" required/>
+      </div>
+      <div class="auth-field">
+        <label>Pseudo <span class="auth-hint">Your display name</span></label>
+        <input type="text" id="reg-pseudo" placeholder="CoolLearner42" autocomplete="nickname" required/>
+      </div>
+      <div class="auth-field">
+        <label>Profile avatar</label>
+        <div class="smiley-picker" id="reg-smiley-picker"></div>
+      </div>
+      <button type="submit" class="btn-primary auth-submit" id="reg-btn">Create account →</button>
+      <p class="auth-error" id="reg-error"></p>
+    </form>
+
+  </div>
+</div>
+
+<script type="module">
+import { login, register, checkAuth } from '../js/auth.js';
+import { router } from '../js/router.js';
+
+// If already signed in, skip to home (checkAuth never redirects)
+const { user } = await checkAuth();
+if (user) { router.go('home'); }
+
+const SMILEYS = [
+  '😀','😎','🤩','🥳','😇','🤓','😏','🤗',
+  '😤','🥶','🤪','😈','👻','🤖','👽','🎃',
+  '🦊','🐱','🐶','🦁','🐼','🐸','🐧','🦄',
+  '🌟','🔥','💎','⚡','🎵','🎸','🎧','🏆',
+];
+
+// ── Smiley picker ─────────────────────────────────────────────────
+let selectedSmiley = SMILEYS[0];
+const picker = document.getElementById('reg-smiley-picker');
+SMILEYS.forEach(s => {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'smiley-opt';
+  btn.textContent = s;
+  if (s === selectedSmiley) btn.classList.add('selected');
+  btn.addEventListener('click', () => {
+    picker.querySelectorAll('.smiley-opt').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedSmiley = s;
+  });
+  picker.appendChild(btn);
+});
+
+// ── Tab switching ─────────────────────────────────────────────────
+document.querySelectorAll('.auth-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const target = tab.dataset.tab;
+    document.getElementById('signin-form').style.display   = target === 'signin'   ? '' : 'none';
+    document.getElementById('register-form').style.display = target === 'register' ? '' : 'none';
+  });
+});
+
+// ── Sign in ───────────────────────────────────────────────────────
+document.getElementById('signin-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const errEl = document.getElementById('si-error');
+  const btn   = document.getElementById('si-btn');
+  errEl.textContent = '';
+  btn.disabled = true;
+  btn.textContent = 'Signing in…';
+  try {
+    await login(
+      document.getElementById('si-email').value.trim(),
+      document.getElementById('si-password').value,
+    );
+    router.go('home');
+  } catch (ex) {
+    errEl.textContent = friendlyError(ex.code);
+    btn.disabled = false;
+    btn.textContent = 'Sign in →';
+  }
+});
+
+// ── Register ──────────────────────────────────────────────────────
+document.getElementById('register-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const errEl    = document.getElementById('reg-error');
+  const btn      = document.getElementById('reg-btn');
+  const email    = document.getElementById('reg-email').value.trim();
+  const username = document.getElementById('reg-username').value.trim();
+  const password = document.getElementById('reg-password').value;
+  const pseudo   = document.getElementById('reg-pseudo').value.trim();
+
+  errEl.textContent = '';
+
+  if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+    errEl.textContent = 'Username: letters, numbers and _ only.'; return;
+  }
+  if (pseudo.length < 2) {
+    errEl.textContent = 'Pseudo must be at least 2 characters.'; return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Creating account…';
+  try {
+    await register({ email, password, username, pseudo, smiley: selectedSmiley });
+    router.go('home');
+  } catch (ex) {
+    errEl.textContent = friendlyError(ex.code);
+    btn.disabled = false;
+    btn.textContent = 'Create account →';
+  }
+});
+
+// ── Error messages ────────────────────────────────────────────────
+function friendlyError(code) {
+  const map = {
+    'auth/email-already-in-use':  'This email is already registered.',
+    'auth/invalid-email':         'Invalid email address.',
+    'auth/weak-password':         'Password must be at least 6 characters.',
+    'auth/user-not-found':        'No account found with this email.',
+    'auth/wrong-password':        'Incorrect password.',
+    'auth/invalid-credential':    'Invalid email or password.',
+    'auth/too-many-requests':     'Too many attempts. Please try again later.',
+    'auth/network-request-failed':'Network error. Check your connection.',
+  };
+  return map[code] || 'An error occurred. Please try again.';
+}
+</script>
+</body>
+</html>
