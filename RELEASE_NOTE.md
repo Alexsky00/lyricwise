@@ -2,6 +2,55 @@
 
 ---
 
+## v1.5-Alpha
+*April 2026*
+
+---
+
+### New features
+
+**In-quiz lyrics drawer**
+A persistent **📝 Lyrics** tab is fixed to the left edge of the screen during a quiz.
+Clicking it slides open a drawer showing the full lyrics of the song being quizzed.
+The excerpt of the current question is automatically **highlighted in blue** and scrolled
+into view inside the drawer. The highlight updates on every question change.
+
+The drawer:
+- Opens/closes via the left-edge handle (click again or press ✕ to close)
+- Slides with the handle — the handle moves right when the drawer is open so it remains
+  reachable at all times
+- Closes automatically when leaving the quiz screen (score, level select)
+- Shows "No lyrics available yet" gracefully when a song has no lyrics file
+
+**Full lyrics data layer** (`data/lyrics/`)
+A new `data/lyrics/` folder stores the full text of each song as a JS module:
+```
+data/lyrics/[slug]-lyrics.js  →  export const lyrics = `…`;
+```
+Lyrics are imported in `data/index.js` and attached to each catalogue entry as a `lyrics`
+property alongside `quiz`. Six songs are now populated; Starships is a placeholder.
+
+**Lyrics export in admin Add Song flow**
+The **↓ Download lyrics/[slug]-lyrics.js** button is now generated alongside the song and
+quiz exports. The textarea content from step 3 (lyrics) is packaged into the file automatically.
+The generated `index.js` snippet includes all three import lines (song, lyrics, quiz).
+
+---
+
+### Technical changes
+
+- `data/lyrics/` — new folder, one `[slug]-lyrics.js` per song
+- `data/index.js` — imports and attaches `lyrics` to every catalogue entry
+- `pages/quiz.html` — lyrics drawer HTML, tab handle, `buildLyricsDrawer()`,
+  `highlightLyricsExcerpt()` with exact + regex-tolerant whitespace matching,
+  `showScreen()` updated to show/hide handle and auto-close drawer
+- `pages/admin.html` — `exportLyricsFile()`, third download button, updated `buildIndexSnippet()`
+- `css/style.css` — drawer, handle, highlight, empty-state styles
+
+---
+
+---
+
 ## v1.4-Alpha
 *April 2026*
 

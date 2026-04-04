@@ -45,6 +45,7 @@ lyricwise/
 └── data/
     ├── index.js             ← assembles all songs — edit this to add a song
     ├── songs/               ← one file per song (metadata only)
+    ├── lyrics/              ← one file per song (full lyrics text)
     └── quizzes/             ← one file per song (questions only)
 ```
 
@@ -56,30 +57,56 @@ lyricwise/
 
 1. Open `pages/admin.html` in the browser
 2. Fill in the song info (title, artist, YouTube/Spotify IDs, icon)
-3. Paste the lyrics and click **✨ Generate quiz with AI →** — copy the prompt into Claude
+3. Paste the full lyrics and click **✨ Generate quiz with AI →** — copy the prompt into Claude
 4. Paste Claude's JSON response back into the modal and click **Import**
-5. Download the two generated files (`songs/[slug].js` and `quizzes/[slug]-quiz.js`)
-6. Move them into `data/songs/` and `data/quizzes/`
+5. Download the **three** generated files:
+   - `songs/[slug].js`
+   - `lyrics/[slug]-lyrics.js`
+   - `quizzes/[slug]-quiz.js`
+6. Move them into their respective `data/` subfolders
 7. Open `data/index.js` and add the import lines shown by the admin page
 8. Push to GitHub
 
 ### Option B — Manual
 
 1. Create `data/songs/my-song.js` (copy an existing one as template)
-2. Create `data/quizzes/my-song-quiz.js` (copy an existing one as template)
-3. Open `data/index.js` and add:
+2. Create `data/lyrics/my-song-lyrics.js` — paste lyrics between the backticks
+3. Create `data/quizzes/my-song-quiz.js` (copy an existing one as template)
+4. Open `data/index.js` and add:
    ```js
-   import { song as mySong }     from './songs/my-song.js';
-   import { quiz as mySongQuiz } from './quizzes/my-song-quiz.js';
+   import { song as mySong }         from './songs/my-song.js';
+   import { lyrics as mySongLyrics } from './lyrics/my-song-lyrics.js';
+   import { quiz as mySongQuiz }     from './quizzes/my-song-quiz.js';
    // then in the catalogue array:
-   { ...mySong, quiz: mySongQuiz },
+   { ...mySong, quiz: mySongQuiz, lyrics: mySongLyrics },
    ```
-4. Save and push:
+5. Save and push:
    ```bash
    git add .
    git commit -m "add my-song"
    git push
    ```
+
+---
+
+## Lyrics drawer (in-quiz)
+
+During a quiz, a **📝 Lyrics** handle is fixed to the left edge of the screen. Clicking it
+slides open a drawer showing the **full song lyrics**. The excerpt used in the current question
+is **automatically highlighted** and scrolled into view. The drawer persists across questions
+and closes automatically when leaving the quiz screen.
+
+Lyrics are stored per song in `data/lyrics/[slug]-lyrics.js` as a plain template-literal string:
+
+```js
+export const lyrics = `Verse 1
+Line one
+Line two
+...`;
+```
+
+Leave the string empty (`export const lyrics = \`\``) for coming-soon songs — the drawer will
+display "No lyrics available yet" gracefully.
 
 ---
 
@@ -173,7 +200,7 @@ Both themes share the same blue accent variables (`--blue-main`, `--blue-light`,
 The version string is defined in `js/ui.js`:
 
 ```js
-export const APP_VERSION = '1.4-Alpha';
+export const APP_VERSION = '1.5-Alpha';
 ```
 
 It is automatically displayed in:

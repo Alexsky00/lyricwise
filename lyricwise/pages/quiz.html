@@ -11,6 +11,24 @@
 
 <canvas id="confetti-canvas" style="position:fixed;inset:0;pointer-events:none;z-index:999;display:none;"></canvas>
 
+<!-- ═══════════════════════════════════════
+     LYRICS DRAWER (left slide-in)
+════════════════════════════════════════ -->
+<div id="lyrics-drawer" class="lyrics-drawer" aria-hidden="true">
+  <div class="lyrics-drawer-header">
+    <div class="lyrics-drawer-title">📝 Lyrics</div>
+    <button class="lyrics-drawer-close" onclick="toggleLyricsDrawer()" title="Close">✕</button>
+  </div>
+  <div class="lyrics-drawer-body" id="lyrics-drawer-body">
+    <!-- Populated by JS when quiz starts -->
+  </div>
+</div>
+
+<!-- Persistent vertical tab on the left edge -->
+<button id="lyrics-tab-handle" class="lyrics-tab-handle" onclick="toggleLyricsDrawer()" title="Show / hide lyrics" style="display:none;">
+  <span class="lyrics-tab-icon">📝</span>
+</button>
+
 <!-- Floating video window -->
 <div id="float-player">
   <div class="float-titlebar" id="float-titlebar">
@@ -93,7 +111,7 @@
           <button class="player-tab active" id="tab-spotify" onclick="switchTab('spotify')">♫ Spotify</button>
           <button class="player-tab" id="tab-youtube" onclick="switchTab('youtube')">▶ YouTube</button>
         </div>
-        <button class="player-collapse-btn" id="player-collapse-icon" title="Show/hide player">▲</button>
+        <button class="player-collapse-btn" id="player-collapse-icon" title="Show/hide player">⬆</button>
       </div>
     </div>
     <div class="player-body" id="player-body">
@@ -227,6 +245,90 @@ function showLevelScreen() {
   });
 }
 
+// ── Lyrics drawer ─────────────────────────────────────────────────
+let lyricsDrawerOpen = false;
+
+window.toggleLyricsDrawer = function() {
+  lyricsDrawerOpen = !lyricsDrawerOpen;
+  const drawer  = document.getElementById('lyrics-drawer');
+  const overlay = document.getElementById('lyrics-drawer-overlay');
+  const handle  = document.getElementById('lyrics-tab-handle');
+  drawer.classList.toggle('open', lyricsDrawerOpen);
+  overlay.classList.toggle('open', lyricsDrawerOpen);
+  handle.classList.toggle('pushed', lyricsDrawerOpen);
+  drawer.setAttribute('aria-hidden', String(!lyricsDrawerOpen));
+};
+
+function buildLyricsDrawer() {
+  const body = document.getElementById('lyrics-drawer-body');
+  if (!song.lyrics || !song.lyrics.trim()) {
+    body.innerHTML = `<div class="lyrics-empty">No lyrics available yet for this song.</div>`;
+    return;
+  }
+  // Render full lyrics as plain HTML — highlighting applied per question
+  body.innerHTML = `<div class="lyrics-full-text" id="lyrics-full-text">${escLyrics(song.lyrics)}</div>`;
+}
+
+/** Escape HTML but preserve line breaks as <br> */
+function escLyrics(text) {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\n/g, '<br>');
+}
+
+function highlightLyricsExcerpt(index) {
+  if (!song.lyrics || !song.lyrics.trim()) return;
+  const fullEl = document.getElementById('lyrics-full-text');
+  if (!fullEl) return;
+
+  const questions = song.quiz?.[currentLevel] || [];
+  const excerpt   = questions[index]?.lyrics;
+  if (!excerpt) {
+    fullEl.innerHTML = escLyrics(song.lyrics);
+    return;
+  }
+
+  // Work in raw-text space to avoid HTML-escaping mismatches,
+  // then find the excerpt position and split around it.
+  const norm = s => s.replace(/\r\n/g, '\n').replace(/\r/g, '\n').replace(/[ \t]+/g, ' ').trim();
+
+  const rawLyrics  = song.lyrics.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  const rawExcerpt = excerpt.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+
+  // Try exact match first, then normalised whitespace match
+  let idx = rawLyrics.indexOf(rawExcerpt);
+  let matchLen = rawExcerpt.length;
+
+  if (idx === -1) {
+    // Build a regex from the excerpt that tolerates whitespace differences
+    const pattern = rawExcerpt
+      .split(/\n/)
+      .map(line => line.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+      .join('[\\s\\S]{0,6}');
+    const re = new RegExp(pattern);
+    const m  = rawLyrics.match(re);
+    if (m) { idx = m.index; matchLen = m[0].length; }
+  }
+
+  if (idx === -1) {
+    // No match found — render clean lyrics
+    fullEl.innerHTML = escLyrics(rawLyrics);
+    return;
+  }
+
+  const before = escLyrics(rawLyrics.slice(0, idx));
+  const match  = escLyrics(rawLyrics.slice(idx, idx + matchLen));
+  const after  = escLyrics(rawLyrics.slice(idx + matchLen));
+  fullEl.innerHTML = `${before}<span class="lyrics-highlight" id="lyrics-highlight">${match}</span>${after}`;
+
+  requestAnimationFrame(() => {
+    const hl = document.getElementById('lyrics-highlight');
+    if (hl) hl.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  });
+}
+
 // ── Quiz ──────────────────────────────────────────────────────────
 function startQuiz(level) {
   if (!hasQuiz(song.id, level)) return;
@@ -235,6 +337,7 @@ function startQuiz(level) {
   const ok = Quiz.init(song, level);
   if (!ok) { router.go('library'); return; }
 
+  buildLyricsDrawer();
   showScreen('quiz');
   initPlayer();
   renderQuestion();
@@ -255,6 +358,7 @@ function renderQuestion() {
   // Lyrics + seek helper
   document.getElementById('quiz-lyrics').innerHTML = q.lyrics.replace(/\n/g, '<br>');
   renderSeekHelper(q.timestamp || 0);
+  highlightLyricsExcerpt(prog.current - 1);
 
   // Question
   document.getElementById('quiz-question').textContent = q.question;
@@ -442,7 +546,7 @@ window.togglePlayerCollapse = function() {
   playerCollapsed = !playerCollapsed;
   const icon = document.getElementById('player-collapse-icon');
   const mp   = document.getElementById('music-player');
-  icon.textContent = playerCollapsed ? '▼' : '▲';
+  icon.textContent = playerCollapsed ? '⭣' : '⭡';
   mp.classList.toggle('collapsed', playerCollapsed);
 };
 
@@ -466,6 +570,9 @@ function showScreen(name) {
   document.getElementById('screen-level').style.display = name === 'level' ? '' : 'none';
   document.getElementById('screen-quiz').style.display  = name === 'quiz'  ? '' : 'none';
   document.getElementById('screen-score').style.display = name === 'score' ? '' : 'none';
+  document.getElementById('lyrics-tab-handle').style.display = name === 'quiz' ? '' : 'none';
+  // Close drawer when leaving quiz screen
+  if (name !== 'quiz' && lyricsDrawerOpen) toggleLyricsDrawer();
 }
 
 // ── Start ─────────────────────────────────────────────────────────

@@ -117,17 +117,18 @@
     <!-- STEP 4: Export files -->
     <div class="admin-section">
       <h2>4. Export files</h2>
-      <p class="admin-hint">Once the quiz is generated, download the two files to add to your project.</p>
+      <p class="admin-hint">Once the quiz is generated, download the three files to add to your project.</p>
       <div class="admin-actions">
-        <button class="admin-btn admin-btn-primary"   id="export-song-btn" disabled>↓ Download songs/[slug].js</button>
-        <button class="admin-btn admin-btn-secondary" id="export-quiz-btn" disabled>↓ Download quizzes/[slug].js</button>
+        <button class="admin-btn admin-btn-primary"   id="export-song-btn"   disabled>↓ Download songs/[slug].js</button>
+        <button class="admin-btn admin-btn-secondary" id="export-lyrics-btn" disabled>↓ Download lyrics/[slug]-lyrics.js</button>
+        <button class="admin-btn admin-btn-secondary" id="export-quiz-btn"   disabled>↓ Download quizzes/[slug]-quiz.js</button>
       </div>
       <div class="admin-status" id="export-status"></div>
       <div class="admin-instructions" id="export-instructions" style="display:none;">
         <p><strong>Next steps:</strong></p>
         <ol>
-          <li>Move both downloaded files into your project's <code>data/songs/</code> and <code>data/quizzes/</code> folders</li>
-          <li>Open <code>data/index.js</code> and add the two import lines shown below</li>
+          <li>Move the downloaded files into <code>data/songs/</code>, <code>data/lyrics/</code> and <code>data/quizzes/</code></li>
+          <li>Open <code>data/index.js</code> and add the import lines shown below</li>
           <li>Add the song to the <code>catalogue</code> array</li>
           <li>Save, push to GitHub: <code>git add . && git commit -m "add [song]" && git push</code></li>
         </ol>
@@ -345,12 +346,14 @@ function applyGeneratedQuiz(parsed, levels) {
   preview.style.display = 'block';
 
   setStatus('gen-status', 'success', `✅ Quiz generated — ${levels.length} levels × 5 questions`);
-  document.getElementById('export-song-btn').disabled = false;
-  document.getElementById('export-quiz-btn').disabled = false;
+  document.getElementById('export-song-btn').disabled   = false;
+  document.getElementById('export-lyrics-btn').disabled = false;
+  document.getElementById('export-quiz-btn').disabled   = false;
   buildIndexSnippet();
 }
 
 document.getElementById('export-song-btn').addEventListener('click', exportSongFile);
+document.getElementById('export-lyrics-btn').addEventListener('click', exportLyricsFile);
 document.getElementById('export-quiz-btn').addEventListener('click', exportQuizFile);
 
 function exportSongFile() {
@@ -375,6 +378,18 @@ export const song = {
   document.getElementById('export-instructions').style.display = 'block';
 }
 
+function exportLyricsFile() {
+  const title  = document.getElementById('adm-title').value.trim();
+  const artist = document.getElementById('adm-artist').value.trim();
+  const lyricsText = document.getElementById('adm-lyrics').value.trim();
+  const slug   = generatedSlug || slugify(title);
+
+  const content = `// data/lyrics/${slug}-lyrics.js\n// ${title} — ${artist}\n\nexport const lyrics = \`${lyricsText.replace(/`/g, '\\`')}\`;\n`;
+  downloadFile(`${slug}-lyrics.js`, content);
+  setStatus('export-status', 'success', `✅ lyrics/${slug}-lyrics.js downloaded`);
+  document.getElementById('export-instructions').style.display = 'block';
+}
+
 function exportQuizFile() {
   if (!generatedQuiz) { setStatus('export-status', 'error', 'Generate the quiz first.'); return; }
   const slug   = generatedSlug;
@@ -392,11 +407,12 @@ function buildIndexSnippet() {
   document.getElementById('index-snippet').textContent =
 `// In data/index.js — add these lines:
 
-import { song as ${varName} }     from './songs/${slug}.js';
-import { quiz as ${varName}Quiz } from './quizzes/${slug}-quiz.js';
+import { song as ${varName} }           from './songs/${slug}.js';
+import { quiz as ${varName}Quiz }       from './quizzes/${slug}-quiz.js';
+import { lyrics as ${varName}Lyrics }   from './lyrics/${slug}-lyrics.js';
 
 // Then in the catalogue array:
-{ ...${varName}, quiz: ${varName}Quiz },`;
+{ ...${varName}, quiz: ${varName}Quiz, lyrics: ${varName}Lyrics },`;
 }
 
 // ════════════════════════════════════════════════════════════════════
