@@ -164,7 +164,7 @@
 
 <script type="module">
 import { router }                   from '../js/router.js';
-import { renderNav, launchConfetti, renderFooter } from '../js/ui.js';
+import { renderNav, launchConfetti, launchGreenSmoke, renderFooter } from '../js/ui.js';
 import { getSong, hasQuiz }         from '../data/index.js';
 import { getScore, saveScore }      from '../js/storage.js';
 import * as Quiz                    from '../js/quiz.js';
@@ -339,6 +339,7 @@ function startQuiz(level) {
 
   buildLyricsDrawer();
   showScreen('quiz');
+  if (song.id === 'could-you-be-loved') launchGreenSmoke();
   initPlayer();
   renderQuestion();
 }

@@ -188,3 +188,71 @@ export function launchConfetti() {
   draw();
   setTimeout(() => { cancelAnimationFrame(frame); ctx.clearRect(0, 0, canvas.width, canvas.height); canvas.style.display = 'none'; }, 10000);
 }
+
+// ── Green smoke (Could You Be Loved) ─────────────────────────────
+
+export function launchGreenSmoke() {
+  const canvas = document.getElementById('confetti-canvas');
+  if (!canvas) return;
+  canvas.style.display = 'block';
+  const ctx = canvas.getContext('2d');
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const DURATION = 10000;
+  const start    = performance.now();
+
+  const particles = Array.from({ length: 55 }, () => ({
+    x:     Math.random() * canvas.width,
+    y:     canvas.height + Math.random() * 60,
+    r:     Math.random() * 30 + 15,
+    vx:    (Math.random() - 0.5) * 0.8,
+    vy:    -(Math.random() * 1.2 + 0.4),
+    alpha: Math.random() * 0.35 + 0.2,
+    hue:   Math.random() * 50 + 95,   // 95–145 : vert jaunâtre → vert bleuté
+    sat:   Math.random() * 40 + 25,
+    lit:   Math.random() * 25 + 20,
+    grow:  Math.random() * 0.25 + 0.08,
+    phase: Math.random() * Math.PI * 2,
+  }));
+
+  let frame;
+  function draw(now) {
+    const elapsed  = now - start;
+    const progress = Math.min(elapsed / DURATION, 1);
+    const fade     = progress > 0.65 ? 1 - (progress - 0.65) / 0.35 : 1;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.filter = 'blur(12px)';
+
+    particles.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `hsla(${p.hue}, ${p.sat}%, ${p.lit}%, ${p.alpha * fade})`;
+      ctx.fill();
+
+      p.y  += p.vy;
+      p.x  += p.vx + Math.sin(now / 900 + p.phase) * 0.4;
+      p.r  += p.grow;
+
+      if (p.y < -p.r * 2) {
+        p.y    = canvas.height + 20;
+        p.x    = Math.random() * canvas.width;
+        p.r    = Math.random() * 30 + 15;
+        p.alpha = Math.random() * 0.35 + 0.2;
+      }
+    });
+
+    ctx.filter = 'none';
+
+    if (progress < 1) {
+      frame = requestAnimationFrame(draw);
+    } else {
+      cancelAnimationFrame(frame);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      canvas.style.display = 'none';
+    }
+  }
+
+  frame = requestAnimationFrame(draw);
+}
