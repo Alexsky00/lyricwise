@@ -108,6 +108,21 @@ Line two
 Leave the string empty (`export const lyrics = \`\``) for coming-soon songs — the drawer will
 display "No lyrics available yet" gracefully.
 
+### Excerpt matching rules
+
+The `highlightLyricsExcerpt()` function in `pages/quiz.html` tries to locate each question's
+`lyrics` excerpt inside the full lyrics string. Two failure modes to avoid when writing quiz
+excerpts:
+
+1. **Character mismatch** — the excerpt must be an exact substring of the full lyrics string,
+   including punctuation and quotation mark style. If the lyrics file uses `"` but the quiz
+   uses `'`, the match silently fails.
+
+2. **Non-adjacent lines** — the regex fallback tolerates up to 6 characters between lines
+   (to absorb whitespace differences). If two lines in the excerpt are separated by other
+   content in the full lyrics, the match fails. Always use lines that appear **consecutively**
+   in the lyrics file.
+
 ---
 
 ## Editing an existing quiz
@@ -200,7 +215,7 @@ Both themes share the same blue accent variables (`--blue-main`, `--blue-light`,
 The version string is defined in `js/ui.js`:
 
 ```js
-export const APP_VERSION = '1.5-Alpha';
+export const APP_VERSION = '1.6-Alpha';
 ```
 
 It is automatically displayed in:

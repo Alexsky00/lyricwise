@@ -2,6 +2,55 @@
 
 ---
 
+## v1.6-Alpha
+*April 2026*
+
+---
+
+### New content
+
+**Could You Be Loved — Bob Marley**
+Seventh song added to the catalogue. Available at levels **A1**, **A2**, and **B1**.
+The quiz covers vocabulary (fool, school, rearrange), figurative language (darkness/light
+metaphor), cultural references (survival of the fittest), and structural analysis (use of
+repetition).
+
+---
+
+### Bug fixes
+
+**Quiz excerpt matching in the lyrics drawer**
+The `highlightLyricsExcerpt()` function in `pages/quiz.html` searches the full lyrics string
+for the current question's excerpt and highlights it in blue. Two categories of mismatch were
+causing silent failures (no highlight, no error):
+
+- **Quotation mark mismatch** — quiz excerpts used straight single quotes (`'`) while the
+  corresponding lines in the lyrics file used double quotes (`"`). The search (both exact and
+  regex) was returning no match.
+- **Non-adjacent lines** — some excerpts combined lines separated by other content in the
+  full lyrics. The regex tolerates at most 6 characters between consecutive excerpt lines,
+  so these gaps caused the match to fail silently.
+
+Both issues were fixed in `data/quizzes/could-you-be-loved-quiz.js`:
+- A2/Q4 and B1/Q4 — corrected quotation marks in the `They say, "Only, only…"` excerpt
+- A1/Q5 — simplified to `Stay alive, eh` (single consecutive line)
+- B1/Q5 — replaced with three consecutive lines (`Could you be loved…` / `Could you be
+  loved, wo now…` / `Love your brotherman`) instead of a non-contiguous four-line selection
+
+---
+
+### Technical changes
+
+- `data/songs/could-you-be-loved.js` — new song metadata
+- `data/lyrics/could-you-be-loved-lyrics.js` — full lyrics
+- `data/quizzes/could-you-be-loved-quiz.js` — A1 / A2 / B1 questions (5 each)
+- `data/index.js` — song imported and added to catalogue
+- `js/ui.js` — version bumped to `1.6-Alpha`
+
+---
+
+---
+
 ## v1.5-Alpha
 *April 2026*
 

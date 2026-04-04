@@ -30,6 +30,10 @@ import { song as words }     from './songs/words.js';
 import { quiz as wordsQuiz } from './quizzes/words-quiz.js';
 import { lyrics as wordsLyrics } from './lyrics/words-lyrics.js';
 
+import { song as couldYouBeLoved }     from './songs/could-you-be-loved.js';
+import { quiz as couldYouBeLovedQuiz } from './quizzes/could-you-be-loved-quiz.js';
+import { lyrics as couldYouBeLovedLyrics } from './lyrics/could-you-be-loved-lyrics.js';
+
 import { song as starships } from './songs/starships.js';
 import { lyrics as starshipsLyrics } from './lyrics/starships-lyrics.js';
 
@@ -41,6 +45,7 @@ export const catalogue = [
   { ...standByMe,       quiz: standByMeQuiz,       lyrics: standByMeLyrics },
   { ...carelessWhisper, quiz: carelessWhisperQuiz, lyrics: carelessWhisperLyrics },
   { ...words,           quiz: wordsQuiz,           lyrics: wordsLyrics },
+  { ...couldYouBeLoved, quiz: couldYouBeLovedQuiz, lyrics: couldYouBeLovedLyrics },
   { ...starships,                                  lyrics: starshipsLyrics },
 ];
 
