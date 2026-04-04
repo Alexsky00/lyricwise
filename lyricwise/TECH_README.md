@@ -113,7 +113,7 @@ Both themes share the same blue accent variables (`--blue-main`, `--blue-light`,
 The version string is defined in `js/ui.js`:
 
 ```js
-export const APP_VERSION = '1.2-Alpha';
+export const APP_VERSION = '1.3-Alpha';
 ```
 
 It is automatically displayed in:

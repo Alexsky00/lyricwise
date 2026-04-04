@@ -2,6 +2,44 @@
 
 ---
 
+## v1.3-Alpha
+*April 2026*
+
+---
+
+### New features
+
+**Admin password protection**
+The admin page is now gated behind a password prompt. The content is hidden until the
+correct password is entered. Verification uses SHA-256 hashing via the Web Crypto API —
+the password is never compared in plain text. A rotating set of funny messages is shown on
+wrong attempts. Authentication persists for the browser session (`sessionStorage`).
+Password is configurable via `const ADMIN_PW` in `pages/admin.html`.
+
+**YouTube float window — draggable**
+The floating YouTube video window can now be freely moved across the screen by
+clicking and dragging the title bar (mouse and touch). It stays within screen bounds
+and switches from CSS anchoring to absolute positioning on first drag.
+
+---
+
+### Improvements
+
+**Light mode — new blue palette**
+The light mode palette was reworked from a blue-tinted grey to a warmer sky-blue scheme:
+`--bg-deep: #e8f4fc`, `--bg-card: #b8dbf0`, `--bg-panel: #7aafc7`. Accent and text
+colors adjusted accordingly. Song card art gradient updated to a very subtle blue-white.
+
+**Light mode — level badges**
+Level badges (library, level-select, quiz bar, stats) now render as solid pastel fills
+with white text in light mode, matching the mockup:
+A1 `#52b788` · A2 `#74c69d` · B1 `#74a8e0` · B2 `#a07cd6` · C1 `#e07878`.
+Applied uniformly across `.level-badge`, `.level-circle`, `.quiz-level-pill`, `.stats-level-pill`.
+
+---
+
+---
+
 ## v1.2-Alpha
 *April 2026*
 

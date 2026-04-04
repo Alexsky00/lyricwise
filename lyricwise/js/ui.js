@@ -4,7 +4,7 @@
 import { router } from './router.js';
 
 // ── Version ───────────────────────────────────────────────────────
-export const APP_VERSION = '1.2-Alpha';
+export const APP_VERSION = '1.3-Alpha';
 
 // ── Theme ─────────────────────────────────────────────────────────
 

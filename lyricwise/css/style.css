@@ -16,16 +16,19 @@
   }
 
   [data-theme="light"] {
-    --bg-deep:       #fffef0;
-    --bg-card:       #d8e0f5;
-    --bg-panel:      #c8d4ee;
-    --text-primary:  #0d1220;
-    --text-secondary:#3a4260;
-    --text-muted:    #7a85a0;
-    --border:        rgba(59,130,246,0.30);
-    --border-soft:   rgba(0,0,0,0.12);
-    --blue-glow:     rgba(59,130,246,0.20);
-    --blue-soft:     rgba(59,130,246,0.14);
+    --bg-deep:        #e8f4fc;
+    --bg-card:        #d7f0ff;
+    --bg-panel:       #e7f7ff;
+    --text-primary:   #0f2535;
+    --text-secondary: #1e4a62;
+    --text-muted:     #6a90a8;
+    --border:         rgba(15,37,53,0.25);
+    --border-soft:    rgba(15,37,53,0.12);
+    --blue-main:      #1e4a62;
+    --blue-light:     #6a90a8;
+    --blue-dark:      #0f2f45;
+    --blue-glow:      rgba(30,74,98,0.25);
+    --blue-soft:      rgba(30,74,98,0.12);
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
@@ -1950,6 +1953,33 @@
   text-align: right;
 }
 
+/* ── Admin password lock ────────────────────────────────────────── */
+#admin-lock {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg-deep);
+  padding: 2rem;
+}
+.admin-lock-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2.5rem 2rem;
+  width: 100%; max-width: 380px;
+  text-align: center;
+  box-shadow: 0 16px 60px rgba(0,0,0,0.4);
+}
+.admin-lock-icon { font-size: 2.8rem; margin-bottom: .75rem; }
+.admin-lock-title { font-size: 1.4rem; font-weight: 800; margin-bottom: .3rem; }
+.admin-lock-sub { font-size: .88rem; color: var(--text-muted); }
+.admin-lock-error {
+  margin-top: .9rem;
+  min-height: 1.4em;
+  font-size: .84rem;
+  color: #f87171;
+  font-weight: 500;
+}
+
 /* ── Admin page tabs ────────────────────────────────────────────── */
 .admin-tab-nav {
   display: flex;
@@ -2075,11 +2105,18 @@
 
 /* ── Light mode overrides for hardcoded dark values ─────────────── */
 [data-theme="light"] .song-card-art {
-  background: linear-gradient(135deg, #dbe4ff 0%, #c5d3f7 100%);
+  background: linear-gradient(135deg, #c8e8f7 0%, #e4f4fc 100%);
 }
+
+[data-theme="light"] .song-card-art::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(to bottom, transparent 50%, rgba(198, 211, 245, 0.6) 100%);
+  }
+
 [data-theme="light"] .coming-soon-badge {
-  background: rgba(240,244,255,0.9);
-  border-color: rgba(0,0,0,0.15);
+  background: rgba(232,245,236,0.92);
+  border-color: rgba(22,48,43,0.2);
   color: var(--text-secondary);
 }
 [data-theme="light"] .quiz-top-bar,
@@ -2092,7 +2129,7 @@
   background: var(--bg-panel);
 }
 [data-theme="light"] .player-header {
-  background: rgba(59,130,246,0.06);
+  background: rgba(30,74,98,0.07);
 }
 [data-theme="light"] #float-player {
   background: var(--bg-card);
@@ -2105,6 +2142,16 @@
 }
 [data-theme="light"] ::-webkit-scrollbar-track { background: var(--bg-deep); }
 [data-theme="light"] ::-webkit-scrollbar-thumb { background: var(--blue-main); }
+[data-theme="light"] .yt-music-visual {
+  background: linear-gradient(135deg, #2d5248, #16302B);
+}
+[data-theme="light"] .nav-cta {
+  background: #cde7f7 !important;
+  color: #0f2535 !important;
+}
+[data-theme="light"] .nav-cta:hover { background: #dbe0e8 !important; box-shadow: none; }
+[data-theme="light"] .btn-primary { background: #cde7f7; color: #0f2535; box-shadow: none; }
+[data-theme="light"] .btn-primary:hover { background: #e8e2db; }
 
 [data-theme="light"] .quiz-option {
   background: var(--bg-card);
@@ -2127,4 +2174,40 @@
 [data-theme="light"] .stat-card,
 [data-theme="light"] .stats-bar-wrap {
   background: var(--bg-card);
+}
+
+/* ── Level badges — pastel solides en light mode ── */
+[data-theme="light"] .level-badge.A1,
+[data-theme="light"] .level-circle.A1,
+[data-theme="light"] .quiz-level-pill.A1,
+[data-theme="light"] .stats-level-pill.A1 { background: #52b788; color: #fff; border-color: #40916c; }
+
+[data-theme="light"] .level-badge.A2,
+[data-theme="light"] .level-circle.A2,
+[data-theme="light"] .quiz-level-pill.A2,
+[data-theme="light"] .stats-level-pill.A2 { background: #74c69d; color: #fff; border-color: #52b788; }
+
+[data-theme="light"] .level-badge.B1,
+[data-theme="light"] .level-circle.B1,
+[data-theme="light"] .quiz-level-pill.B1,
+[data-theme="light"] .stats-level-pill.B1 { background: #74a8e0; color: #fff; border-color: #5692d4; }
+
+[data-theme="light"] .level-badge.B2,
+[data-theme="light"] .level-circle.B2,
+[data-theme="light"] .quiz-level-pill.B2,
+[data-theme="light"] .stats-level-pill.B2 { background: #a07cd6; color: #fff; border-color: #8b5cf6; }
+
+[data-theme="light"] .level-badge.C1,
+[data-theme="light"] .level-circle.C1,
+[data-theme="light"] .quiz-level-pill.C1,
+[data-theme="light"] .stats-level-pill.C1 { background: #e07878; color: #fff; border-color: #c85252; }
+
+/* coming-soon: même teintes mais désaturées */
+[data-theme="light"] .song-card.coming-soon .level-badge { opacity: .35; }
+
+/* ── Badge "Played" ── */
+[data-theme="light"] .completed-badge {
+  background: rgba(82,183,136,0.18);
+  border-color: rgba(64,145,108,0.45);
+  color: #2d7a52;
 }

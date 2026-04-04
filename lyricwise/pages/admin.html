@@ -10,7 +10,21 @@
 <body>
 <nav id="main-nav"></nav>
 
-<main class="admin-main">
+<!-- ── Password overlay ── -->
+<div id="admin-lock">
+  <div class="admin-lock-card">
+    <div class="admin-lock-icon">🔐</div>
+    <h2 class="admin-lock-title">Admin access</h2>
+    <p class="admin-lock-sub">Enter the password to continue</p>
+    <div class="admin-field" style="margin-top:1.2rem;">
+      <input type="password" id="admin-pw-input" placeholder="Password" autocomplete="off"/>
+    </div>
+    <button class="admin-btn admin-btn-primary" id="admin-pw-btn" style="width:100%;margin-top:.75rem;">Unlock →</button>
+    <p class="admin-lock-error" id="admin-pw-error"></p>
+  </div>
+</div>
+
+<main class="admin-main" id="admin-main" style="display:none;">
   <div class="admin-header">
     <div>
       <h1>⚙ Admin</h1>
@@ -32,7 +46,7 @@
 
     <!-- STEP 1: Song info -->
     <div class="admin-section">
-      <h2>① Song information</h2>
+      <h2>1. Song information</h2>
       <div class="admin-grid">
         <div class="admin-field">
           <label>Title</label>
@@ -55,7 +69,7 @@
 
     <!-- STEP 2: Icon -->
     <div class="admin-section">
-      <h2>② Song icon</h2>
+      <h2>2. Song icon</h2>
       <div class="icon-picker" id="icon-picker">
         <div class="icon-opt selected" data-icon="🎵">🎵</div>
         <div class="icon-opt" data-icon="🎸">🎸</div>
@@ -82,7 +96,7 @@
 
     <!-- STEP 3: Generate quiz -->
     <div class="admin-section">
-      <h2>③ Generate quiz <span class="field-hint">— select levels to include</span></h2>
+      <h2>3. Generate quiz <span class="field-hint">— select levels to include</span></h2>
       <div class="level-tabs" id="level-tabs">
         <div class="level-tab active" data-level="A1">A1</div>
         <div class="level-tab active" data-level="A2">A2</div>
@@ -102,7 +116,7 @@
 
     <!-- STEP 4: Export files -->
     <div class="admin-section">
-      <h2>④ Export files</h2>
+      <h2>4. Export files</h2>
       <p class="admin-hint">Once the quiz is generated, download the two files to add to your project.</p>
       <div class="admin-actions">
         <button class="admin-btn admin-btn-primary"   id="export-song-btn" disabled>↓ Download songs/[slug].js</button>
@@ -188,7 +202,54 @@ import { renderNav, renderFooter, APP_VERSION } from '../js/ui.js';
 import { catalogue, hasQuiz } from '../data/index.js';
 renderNav('admin');
 renderFooter();
-document.getElementById('admin-version-badge').textContent = `v${APP_VERSION}`;
+
+// ── Password gate ─────────────────────────────────────────────────
+const ADMIN_PW = 'LyricWiseAdmin'; // ← change password here
+
+const FUNNY = [
+  "Ah ah ah, you didn't say the magic word! 🦖",
+  "Wrong! Are you even an admin? 🤨",
+  "Nope. Have you tried 'password123'? 🙃",
+  "Access denied. Maybe you should tip the admin... 💸",
+  "Hmm… that's not it. Maybe ask the DJ? 🎧",
+  "❌ Incorrect. Your music taste is also questionable.",
+  "That's definitely not right. Back to the quizzes! 🎓",
+];
+let attempts = 0;
+
+async function hashStr(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+async function unlock() {
+  const input = document.getElementById('admin-pw-input').value;
+  const [hashInput, hashRef] = await Promise.all([hashStr(input), hashStr(ADMIN_PW)]);
+  if (hashInput === hashRef) {
+    sessionStorage.setItem('lw_admin_auth', '1');
+    document.getElementById('admin-lock').style.display = 'none';
+    document.getElementById('admin-main').style.display = '';
+    document.getElementById('admin-version-badge').textContent = `v${APP_VERSION}`;
+  } else {
+    attempts++;
+    const err = document.getElementById('admin-pw-error');
+    err.textContent = FUNNY[(attempts - 1) % FUNNY.length];
+    document.getElementById('admin-pw-input').value = '';
+    document.getElementById('admin-pw-input').focus();
+  }
+}
+
+// Check session (avoid re-entering on page reload)
+if (sessionStorage.getItem('lw_admin_auth') === '1') {
+  document.getElementById('admin-lock').style.display = 'none';
+  document.getElementById('admin-main').style.display = '';
+  document.getElementById('admin-version-badge').textContent = `v${APP_VERSION}`;
+}
+
+document.getElementById('admin-pw-btn').addEventListener('click', unlock);
+document.getElementById('admin-pw-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') unlock();
+});
 
 // ── Tab switching ─────────────────────────────────────────────────
 document.querySelectorAll('.admin-tab-btn').forEach(btn => {
