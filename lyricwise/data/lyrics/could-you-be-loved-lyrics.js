@@ -4,7 +4,7 @@
 export const lyrics = `Could you be loved and be loved?
 Could you be loved and be loved?
 Don't let them fool ya
-Or even try to school ya! Oh, no!
+Or even try to school ya!
 We've got a mind of our own
 So go to hell if what you're thinking is not right!
 Love would never leave us alone
