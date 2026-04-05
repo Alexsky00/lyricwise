@@ -44,6 +44,31 @@
       <p class="profile-msg" id="smiley-msg"></p>
     </div>
 
+    <!-- ── Spotify account ── -->
+    <div class="profile-section">
+      <h2 class="profile-section-title">Spotify account</h2>
+      <p class="profile-section-desc">Link your Spotify account to identify yourself across the app.</p>
+
+      <!-- Linked state -->
+      <div id="spotify-linked-block" style="display:none;">
+        <div class="spotify-linked-card">
+          <div class="spotify-linked-avatar-placeholder" id="spotify-avatar-wrap">♫</div>
+          <div class="spotify-linked-info">
+            <div class="spotify-linked-label">Connected</div>
+            <div class="spotify-linked-name" id="spotify-display-name"></div>
+          </div>
+        </div>
+        <button class="btn-spotify-unlink" id="unlink-spotify-btn">Unlink Spotify</button>
+      </div>
+
+      <!-- Unlinked state -->
+      <div id="spotify-unlinked-block">
+        <button class="btn-spotify" id="link-spotify-btn">♫ &nbsp;Link Spotify account</button>
+      </div>
+
+      <p class="profile-msg" id="spotify-msg"></p>
+    </div>
+
     <!-- ── Change password ── -->
     <div class="profile-section">
       <h2 class="profile-section-title">Change password</h2>
@@ -65,10 +90,20 @@
 <script type="module">
 import { requireAuth, updateProfile, changePassword, getCurrentProfile } from '../js/auth.js';
 import { renderNav, renderFooter } from '../js/ui.js';
+import { startSpotifyAuth, consumeSpotifyResult } from '../js/spotify-auth.js';
 
 const { profile } = await requireAuth();
 renderNav('profile', profile);
 renderFooter();
+
+// ── Pick up result left by spotify-callback.html ──────────────────
+const spotifyData = consumeSpotifyResult();
+if (spotifyData) {
+  try {
+    await updateProfile(spotifyData);
+    Object.assign(profile, spotifyData);
+  } catch { /* handled below when rendering */ }
+}
 
 // ── Fill in current values ────────────────────────────────────────
 document.getElementById('profile-avatar-display').textContent = profile.smiley;
@@ -98,6 +133,40 @@ SMILEYS.forEach(s => {
     selectedSmiley = s;
   });
   picker.appendChild(btn);
+});
+
+// ── Spotify section ───────────────────────────────────────────────
+function renderSpotifySection(p) {
+  const linked   = document.getElementById('spotify-linked-block');
+  const unlinked = document.getElementById('spotify-unlinked-block');
+  if (p.spotifyId) {
+    linked.style.display   = '';
+    unlinked.style.display = 'none';
+    document.getElementById('spotify-display-name').textContent = p.spotifyDisplayName || p.spotifyId;
+    const wrap = document.getElementById('spotify-avatar-wrap');
+    if (p.spotifyImage) {
+      wrap.innerHTML = `<img src="${p.spotifyImage}" alt="Spotify avatar" class="spotify-linked-avatar"/>`;
+    } else {
+      wrap.textContent = '♫';
+    }
+  } else {
+    linked.style.display   = 'none';
+    unlinked.style.display = '';
+  }
+}
+renderSpotifySection(profile);
+
+document.getElementById('link-spotify-btn').addEventListener('click', () => startSpotifyAuth(window.location.href));
+
+document.getElementById('unlink-spotify-btn').addEventListener('click', async () => {
+  try {
+    await updateProfile({ spotifyId: null, spotifyDisplayName: null, spotifyImage: null });
+    Object.assign(profile, { spotifyId: null, spotifyDisplayName: null, spotifyImage: null });
+    renderSpotifySection(profile);
+    setMsg('spotify-msg', '✓ Spotify account unlinked.', 'success');
+  } catch {
+    setMsg('spotify-msg', 'Failed to unlink. Try again.', 'error');
+  }
 });
 
 // ── Helpers ───────────────────────────────────────────────────────

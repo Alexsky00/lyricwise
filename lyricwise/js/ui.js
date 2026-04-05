@@ -4,7 +4,7 @@
 import { router } from './router.js';
 
 // ── Version ───────────────────────────────────────────────────────
-export const APP_VERSION = '1.6-Alpha';
+export const APP_VERSION = '1.7-Alpha';
 
 // ── Theme ─────────────────────────────────────────────────────────
 
@@ -199,7 +199,7 @@ export function launchGreenSmoke() {
   canvas.width  = window.innerWidth;
   canvas.height = window.innerHeight;
 
-  const DURATION = 10000;
+  const DURATION = 5000;
   const start    = performance.now();
 
   const particles = Array.from({ length: 55 }, () => ({

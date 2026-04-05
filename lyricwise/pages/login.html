@@ -58,6 +58,22 @@
         <label>Profile avatar</label>
         <div class="smiley-picker" id="reg-smiley-picker"></div>
       </div>
+      <div class="auth-field">
+        <label>Spotify account <span class="auth-hint">Optional</span></label>
+        <div id="reg-spotify-unlinked">
+          <button type="button" class="btn-spotify" id="reg-link-spotify-btn">♫ &nbsp;Link Spotify account</button>
+        </div>
+        <div id="reg-spotify-linked" style="display:none;">
+          <div class="spotify-linked-card">
+            <div class="spotify-linked-avatar-placeholder" id="reg-spotify-avatar-wrap">♫</div>
+            <div class="spotify-linked-info">
+              <div class="spotify-linked-label">Connected</div>
+              <div class="spotify-linked-name" id="reg-spotify-name"></div>
+            </div>
+          </div>
+          <button type="button" class="btn-spotify-unlink" id="reg-unlink-spotify-btn">Unlink</button>
+        </div>
+      </div>
       <button type="submit" class="btn-primary auth-submit" id="reg-btn">Create account →</button>
       <p class="auth-error" id="reg-error"></p>
     </form>
@@ -68,10 +84,35 @@
 <script type="module">
 import { login, register, checkAuth } from '../js/auth.js';
 import { router } from '../js/router.js';
+import { startSpotifyAuth, consumeSpotifyResult } from '../js/spotify-auth.js';
 
 // If already signed in, skip to home (checkAuth never redirects)
 const { user } = await checkAuth();
 if (user) { router.go('home'); }
+
+// ── Spotify state for registration ────────────────────────────────
+let regSpotifyData = null; // { spotifyId, spotifyDisplayName, spotifyImage }
+
+// Pick up result left by spotify-callback.html
+const spotifyResult = consumeSpotifyResult();
+if (spotifyResult) {
+  regSpotifyData = spotifyResult;
+  // Restore form values saved before the redirect
+  const saved = sessionStorage.getItem('sp_reg_form');
+  if (saved) {
+    try {
+      const f = JSON.parse(saved);
+      document.getElementById('reg-email').value    = f.email    || '';
+      document.getElementById('reg-username').value = f.username || '';
+      document.getElementById('reg-pseudo').value   = f.pseudo   || '';
+      sessionStorage._restoredSmiley = f.smiley;
+    } catch { /* ignore */ }
+    sessionStorage.removeItem('sp_reg_form');
+  }
+  // Switch to the register tab
+  document.querySelector('.auth-tab[data-tab="register"]').click();
+  _renderRegSpotify();
+}
 
 const SMILEYS = [
   '😀','😎','🤩','🥳','😇','🤓','😏','🤗',
@@ -81,7 +122,9 @@ const SMILEYS = [
 ];
 
 // ── Smiley picker ─────────────────────────────────────────────────
-let selectedSmiley = SMILEYS[0];
+const restored = sessionStorage._restoredSmiley;
+delete sessionStorage._restoredSmiley;
+let selectedSmiley = restored || SMILEYS[0];
 const picker = document.getElementById('reg-smiley-picker');
 SMILEYS.forEach(s => {
   const btn = document.createElement('button');
@@ -129,6 +172,42 @@ document.getElementById('signin-form').addEventListener('submit', async e => {
   }
 });
 
+// ── Spotify helpers (register form) ──────────────────────────────
+function _renderRegSpotify() {
+  const linked   = document.getElementById('reg-spotify-linked');
+  const unlinked = document.getElementById('reg-spotify-unlinked');
+  if (regSpotifyData) {
+    linked.style.display   = '';
+    unlinked.style.display = 'none';
+    document.getElementById('reg-spotify-name').textContent = regSpotifyData.spotifyDisplayName;
+    const wrap = document.getElementById('reg-spotify-avatar-wrap');
+    if (regSpotifyData.spotifyImage) {
+      wrap.innerHTML = `<img src="${regSpotifyData.spotifyImage}" alt="" class="spotify-linked-avatar"/>`;
+    } else {
+      wrap.textContent = '♫';
+    }
+  } else {
+    linked.style.display   = 'none';
+    unlinked.style.display = '';
+  }
+}
+_renderRegSpotify();
+
+document.getElementById('reg-link-spotify-btn').addEventListener('click', () => {
+  const formState = {
+    email:    document.getElementById('reg-email').value.trim(),
+    username: document.getElementById('reg-username').value.trim(),
+    pseudo:   document.getElementById('reg-pseudo').value.trim(),
+    smiley:   selectedSmiley,
+  };
+  startSpotifyAuth(window.location.href, 'sp_reg_form', formState);
+});
+
+document.getElementById('reg-unlink-spotify-btn').addEventListener('click', () => {
+  regSpotifyData = null;
+  _renderRegSpotify();
+});
+
 // ── Register ──────────────────────────────────────────────────────
 document.getElementById('register-form').addEventListener('submit', async e => {
   e.preventDefault();
@@ -151,7 +230,7 @@ document.getElementById('register-form').addEventListener('submit', async e => {
   btn.disabled = true;
   btn.textContent = 'Creating account…';
   try {
-    await register({ email, password, username, pseudo, smiley: selectedSmiley });
+    await register({ email, password, username, pseudo, smiley: selectedSmiley, ...regSpotifyData });
     router.go('home');
   } catch (ex) {
     errEl.textContent = friendlyError(ex.code);

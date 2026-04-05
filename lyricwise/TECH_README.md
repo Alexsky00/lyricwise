@@ -125,6 +125,61 @@ excerpts:
 
 ---
 
+## Spotify account linking
+
+LyricWise lets users link their Spotify account to their profile using **OAuth 2.0 PKCE**
+(no backend required).
+
+### Setup
+
+1. Create an app at [developer.spotify.com/dashboard](https://developer.spotify.com/dashboard)
+2. In **Edit settings → Redirect URIs**, add:
+   ```
+   http://127.0.0.1:5500/lyricwise/pages/spotify-callback.html   ← local dev
+   https://alexsky00.github.io/lyricwise/pages/spotify-callback.html  ← production
+   ```
+3. Copy the **Client ID** into `js/spotify-auth.js`:
+   ```js
+   export const SPOTIFY_CLIENT_ID = 'your_client_id_here';
+   ```
+
+### Flow
+
+```
+profile.html / login.html
+  └─ startSpotifyAuth(returnTo)
+       └─ Spotify consent screen
+            └─ pages/spotify-callback.html   ← single registered redirect URI
+                 ├─ handleSpotifyCallback()  ← PKCE token exchange + GET /v1/me
+                 ├─ sessionStorage.setItem('sp_result', JSON.stringify(data))
+                 └─ window.location.replace(returnTo)
+                      └─ profile.html / login.html
+                           └─ consumeSpotifyResult()
+                                └─ updateProfile({ spotifyId, spotifyDisplayName, spotifyImage })
+```
+
+### Key exports from `js/spotify-auth.js`
+
+| Export | Usage |
+|---|---|
+| `startSpotifyAuth(returnTo, stateKey?, stateData?)` | Redirect to Spotify consent screen |
+| `handleSpotifyCallback()` | Called by `spotify-callback.html` only — exchanges code for token |
+| `consumeSpotifyResult()` | Called on the return page — reads and clears `sp_result` from sessionStorage |
+
+### Firestore fields added on link
+
+| Field | Type | Description |
+|---|---|---|
+| `spotifyId` | string | Spotify user ID |
+| `spotifyDisplayName` | string | Spotify display name |
+| `spotifyImage` | string \| null | URL of the user's Spotify profile picture |
+
+> **Playback vs linking** — linking a Spotify account stores the profile data in Firestore.
+> It does not affect the embed player, which streams audio based on Spotify cookies in the
+> browser independently.
+
+---
+
 ## Editing an existing quiz
 
 1. Open `pages/admin.html` in the browser
@@ -215,7 +270,7 @@ Both themes share the same blue accent variables (`--blue-main`, `--blue-light`,
 The version string is defined in `js/ui.js`:
 
 ```js
-export const APP_VERSION = '1.6-Alpha';
+export const APP_VERSION = '1.7-Alpha';
 ```
 
 It is automatically displayed in:

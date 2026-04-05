@@ -2,6 +2,62 @@
 
 ---
 
+## v1.7-Alpha
+*April 2026*
+
+---
+
+### New features
+
+**Spotify account linking**
+Users can now link their Spotify account to their LyricWise profile.
+
+- **Profile page** (`pages/profile.html`) — new "Spotify account" section:
+  - If not linked: green "Link Spotify account" button
+  - If linked: card showing the Spotify avatar and display name, with an "Unlink" button
+- **Registration form** (`pages/login.html`) — optional "Link Spotify account" step in the
+  Create account form; Spotify data is stored alongside the profile on registration
+- After linking, the Spotify display name and avatar are saved to Firestore (`spotifyId`,
+  `spotifyDisplayName`, `spotifyImage` fields on the user document)
+
+The flow uses **OAuth 2.0 Authorization Code + PKCE** (no backend required):
+1. User clicks "Link Spotify" → redirected to Spotify's consent screen
+2. Spotify redirects to `pages/spotify-callback.html` (the single registered redirect URI)
+3. The callback page exchanges the code for a token, fetches `/v1/me`, stores the result in
+   `sessionStorage`, then redirects back to the originating page
+4. The originating page calls `consumeSpotifyResult()` and saves to Firestore
+
+> **Note on playback** — linking a Spotify account to a LyricWise profile is separate from
+> the embed player. The embed player streams audio based on Spotify cookies in the browser,
+> not on the linked account. Full playback requires being signed in to Spotify in the browser.
+
+**Green smoke effect — Could You Be Loved**
+A greenish smoke particle animation plays at the start of every quiz for *Could You Be Loved*
+(Bob Marley), regardless of level. Implemented via the shared `confetti-canvas` element.
+The effect fades out automatically after 5 seconds.
+
+---
+
+### Technical changes
+
+- `js/spotify-auth.js` — new module: `startSpotifyAuth()`, `handleSpotifyCallback()`,
+  `consumeSpotifyResult()`, PKCE helpers, `_callbackUri()` (always points to the dedicated
+  callback page)
+- `pages/spotify-callback.html` — new dedicated OAuth callback page; on error it renders
+  the exact redirect URI to register in the Spotify dashboard
+- `pages/profile.html` — Spotify section, `renderSpotifySection()`, link/unlink handlers,
+  `consumeSpotifyResult()` called on load
+- `pages/login.html` — optional Spotify step in the register form; form state saved to
+  `sessionStorage` before redirect and restored on return
+- `js/auth.js` — `register()` now accepts `spotifyId`, `spotifyDisplayName`, `spotifyImage`
+- `js/ui.js` — `launchGreenSmoke()` exported; version bumped to `1.7-Alpha`
+- `css/style.css` — `.btn-spotify`, `.btn-spotify-unlink`, `.spotify-linked-card`,
+  `.spotify-linked-avatar`, `.spotify-linked-avatar-placeholder`, `.spotify-linked-info`
+
+---
+
+---
+
 ## v1.6-Alpha
 *April 2026*
 

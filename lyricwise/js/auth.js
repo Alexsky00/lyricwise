@@ -81,10 +81,11 @@ export function getCachedProfile() {
 
 // ── Auth actions ──────────────────────────────────────────────────
 
-export async function register({ email, password, username, pseudo, smiley }) {
+export async function register({ email, password, username, pseudo, smiley, spotifyId = null, spotifyDisplayName = null, spotifyImage = null }) {
   const cred    = await createUserWithEmailAndPassword(auth, email, password);
   const uid     = cred.user.uid;
-  const profile = { uid, email, username, pseudo, smiley, createdAt: Date.now() };
+  const profile = { uid, email, username, pseudo, smiley, createdAt: Date.now(),
+    ...(spotifyId ? { spotifyId, spotifyDisplayName, spotifyImage } : {}) };
   await setDoc(doc(db, 'users', uid), profile);
   _profile = profile;
   setCurrentUserId(uid);

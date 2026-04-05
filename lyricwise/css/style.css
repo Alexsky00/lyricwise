@@ -2738,3 +2738,62 @@
 [data-theme="light"] .smiley-opt { background: rgba(255,255,255,0.7); }
 [data-theme="light"] .auth-tabs  { background: rgba(15,37,53,0.06); }
 [data-theme="light"] .auth-card  { box-shadow: 0 8px 32px rgba(0,0,0,0.1); }
+
+/* ══════════════════════════════════════════
+   SPOTIFY LINK
+══════════════════════════════════════════ */
+.btn-spotify {
+  display: inline-flex; align-items: center; gap: .5rem;
+  background: #1DB954; color: #fff;
+  border: none; border-radius: 500px;
+  padding: .65rem 1.4rem;
+  font-size: .9rem; font-weight: 600; font-family: inherit;
+  cursor: pointer;
+  transition: background .2s, transform .15s, box-shadow .2s;
+}
+.btn-spotify:hover {
+  background: #1ed760;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(29,185,84,.35);
+}
+.btn-spotify:active { transform: none; }
+
+.spotify-linked-card {
+  display: flex; align-items: center; gap: .85rem;
+  background: rgba(29,185,84,.08);
+  border: 1px solid rgba(29,185,84,.3);
+  border-radius: 12px;
+  padding: .75rem 1rem;
+  margin-bottom: .75rem;
+}
+.spotify-linked-avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: rgba(29,185,84,.2);
+  flex-shrink: 0;
+}
+.spotify-linked-avatar-placeholder {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: #1DB954;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; flex-shrink: 0;
+}
+.spotify-linked-info { flex: 1; min-width: 0; }
+.spotify-linked-label {
+  font-size: .7rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .07em; color: #1DB954; margin-bottom: .15rem;
+}
+.spotify-linked-name {
+  font-size: .95rem; font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.btn-spotify-unlink {
+  background: transparent; color: var(--text-muted);
+  border: 1px solid var(--border-soft); border-radius: 8px;
+  padding: .4rem .9rem; font-size: .82rem; font-family: inherit;
+  cursor: pointer; transition: border-color .2s, color .2s;
+}
+.btn-spotify-unlink:hover { border-color: #f87171; color: #f87171; }
