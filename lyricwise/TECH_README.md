@@ -211,7 +211,7 @@ profile.html / login.html
 Defined in `js/ui.js`:
 
 ```js
-export const APP_VERSION = '1.9-Alpha';
+export const APP_VERSION = '2.0-Alpha';
 ```
 
 Displayed in the footer of every page and the admin badge.

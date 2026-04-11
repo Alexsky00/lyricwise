@@ -38,7 +38,7 @@
     <button class="admin-tab-btn active" data-panel="panel-add">✨ Add Song</button>
     <button class="admin-tab-btn"        data-panel="panel-edit">✏️ Edit Quiz</button>
     <button class="admin-tab-btn"        data-panel="panel-timestamps">⏱ Timestamps</button>
-    <button class="admin-tab-btn"        data-panel="panel-lyrics">🔍 Lyrics</button>
+    <button class="admin-tab-btn"        data-panel="panel-lyrics">🔍 Edit data songs</button>
     <button class="admin-tab-btn"        data-panel="panel-migrate">🔄 Migrate</button>
   </div>
 
@@ -481,25 +481,81 @@ async function generateQuiz() {
   if (!levels.length)    { setStatus('gen-status', 'error', 'Select at least one level.'); return; }
 
   const snippet = lyrics.length > 800 ? lyrics.slice(0, 800) + '…' : lyrics;
-  promptText = `You are an English teaching assistant. Generate quiz questions for the song "${title}" by ${artist}.
+  promptText = `You are an English teaching assistant. Generate a structured 24-question quiz for the song "${title}" by ${artist} for each requested CEFR level.
 
 LYRICS:
 ${snippet}
 
-Generate 5 multiple-choice questions for each of these CEFR levels: ${levels.join(', ')}.
+== STRUCTURE (always exactly 24 questions per level, in this order) ==
 
-For each question provide:
-- lyrics: 2-4 lines from the song as excerpt
-- question: a comprehension or vocabulary question
-- options: array of 4 answers
-- correct: index (0-3) of the correct answer
-- timestamp: estimated position in seconds in the song
-- feedback: explanation starting with ❌
+SECTION 1 — VOCABULARY (8 questions)
+• Exercise A — 4 questions, type "match": match word to meaning
+• Exercise B — 4 questions, type "mcq": fill/choose the correct word (4 options)
 
-Respond ONLY with a valid JSON object. No markdown, no backticks. Example:
-{"A1":[{"lyrics":"line1\\nline2","question":"What does X mean?","options":["A","B","C","D"],"correct":1,"timestamp":30,"feedback":"❌ Explanation."}],"A2":[...]}
+SECTION 2 — LISTENING (8 questions)
+• Exercise A — 4 questions, type "mcq": choose what you hear (2 options only)
+• Exercise B — 4 questions, type "fill": complete the lyric (wordBank present at A1/A2, absent at B1+)
 
-Only include levels: ${levels.join(', ')}`;
+SECTION 3 — READING (8 questions)
+• Exercise A — 4 questions, type "tf": true or false statement
+• Exercise B — 4 questions, type "mcq": comprehension/interpretation (4 options)
+
+== FIELDS BY TYPE ==
+
+type "match":
+  section:"vocabulary", exercise:"A"
+  term: the word (string)
+  definition: its meaning in simple English (string)
+  timestamp: estimated seconds in song (number)
+  feedback: "✅ [term] means [definition]."
+
+type "mcq":
+  section:"vocabulary"|"listening"|"reading", exercise:"A"|"B"
+  lyrics: 1-3 relevant lines (use \\n between lines, empty string "" if none)
+  question: the question text
+  options: array of 2 strings (Listening A) or 4 strings (Vocab B / Reading B)
+  correct: index 0-based of the correct option
+  timestamp: estimated seconds (number)
+  feedback: explanation starting with ❌ (shown on wrong answer)
+
+type "fill":
+  section:"listening", exercise:"B"
+  lyrics: the lyric line with ___ replacing the missing word (e.g. "I see ___ of blue")
+  question: "Complete the lyric line."
+  correct: the exact missing word (string)
+  wordBank: array of 4 strings including the correct answer — ONLY at levels A1 and A2, omit at B1+
+  timestamp: estimated seconds (number)
+  feedback: "❌ The missing word is '[correct]'. [brief explanation]"
+
+type "tf":
+  section:"reading", exercise:"A"
+  statement: a True/False statement about the song
+  correct: true or false (boolean)
+  correction: if correct=false, the corrected version of the statement (string); if correct=true, omit
+  timestamp: 0
+  feedback: "✅ [brief explanation]" if true, "❌ [correction]" if false
+
+== DIFFICULTY SCALING ==
+A1: simple vocabulary, obvious answers, include wordBank for fill
+A2: slightly harder vocabulary, 2 plausible distractors, include wordBank for fill
+B1: figurative/phrasal meaning, no wordBank, inference required in Reading
+B2: abstract/contextual, interpretive choices, evidence-based Reading
+C1: connotation/register, literary devices, critical Reading
+
+== OUTPUT FORMAT ==
+Respond ONLY with a valid JSON object. No markdown, no backticks, no comments.
+Each level is a key mapping to an array of exactly 24 question objects in section order.
+Only include levels: ${levels.join(', ')}
+
+Example skeleton (A1 only, abbreviated):
+{"A1":[
+  {"type":"match","section":"vocabulary","exercise":"A","term":"sky","definition":"the blue space above the earth","timestamp":12,"feedback":"✅ 'sky' means the blue space above the earth."},
+  {"type":"match","section":"vocabulary","exercise":"A","term":"friend","definition":"a person you know and like","timestamp":20,"feedback":"✅ 'friend' means a person you know and like."},
+  {"type":"match","section":"vocabulary","exercise":"A","term":"green","definition":"the colour of grass and leaves","timestamp":8,"feedback":"✅ 'green' is the colour of grass and leaves."},
+  {"type":"match","section":"vocabulary","exercise":"A","term":"wonderful","definition":"very beautiful and amazing","timestamp":5,"feedback":"✅ 'wonderful' means very beautiful and amazing."},
+  {"type":"mcq","section":"vocabulary","exercise":"B","lyrics":"I see ___ of blue","question":"Choose the correct word to complete the line.","options":["skies","birds","dreams","clouds"],"correct":0,"timestamp":10,"feedback":"❌ The correct word is 'skies' — the singer sees blue skies."},
+  ... (19 more)
+]}`;
 
   showPasteModal();
 }
@@ -510,10 +566,11 @@ function applyGeneratedQuiz(parsed, levels) {
 
   const preview = document.getElementById('quiz-preview');
   const first   = Object.values(parsed)[0]?.[0];
-  preview.textContent = `// Preview — first question:\n${JSON.stringify(first, null, 2)}\n\n// ${levels.length} levels × 5 questions generated`;
+  const qCount  = Object.values(parsed)[0]?.length ?? '?';
+  preview.textContent = `// Preview — first question:\n${JSON.stringify(first, null, 2)}\n\n// ${levels.length} level(s) × ${qCount} questions generated`;
   preview.style.display = 'block';
 
-  setStatus('gen-status', 'success', `✅ Quiz generated — ${levels.length} levels × 5 questions`);
+  setStatus('gen-status', 'success', `✅ Quiz generated — ${levels.length} level(s) × ${qCount} questions`);
   document.getElementById('export-song-btn').disabled    = false;
   document.getElementById('export-lyrics-btn').disabled  = false;
   document.getElementById('export-quiz-btn').disabled    = false;
@@ -1175,8 +1232,29 @@ document.getElementById('import-json-btn').addEventListener('click', () => {
     levels.forEach(lv => {
       if (!Array.isArray(parsed[lv]) || !parsed[lv].length) throw new Error(`Level ${lv} has no questions`);
       parsed[lv].forEach((q, i) => {
-        if (!q.lyrics || !q.question || !q.options || q.correct === undefined)
-          throw new Error(`Question ${i+1} in ${lv} is missing fields`);
+        const n = i + 1;
+        const t = q.type;
+        if (!t) {
+          // Legacy format — keep old validation
+          if (!q.lyrics || !q.question || !q.options || q.correct === undefined)
+            throw new Error(`Question ${n} in ${lv} is missing fields (legacy)`);
+          return;
+        }
+        if (t === 'match') {
+          if (!q.term || !q.definition)
+            throw new Error(`Question ${n} in ${lv} (match): missing term or definition`);
+        } else if (t === 'mcq') {
+          if (!q.options || !Array.isArray(q.options) || q.correct === undefined)
+            throw new Error(`Question ${n} in ${lv} (mcq): missing options or correct`);
+        } else if (t === 'fill') {
+          if (!q.lyrics || q.correct === undefined)
+            throw new Error(`Question ${n} in ${lv} (fill): missing lyrics or correct`);
+        } else if (t === 'tf') {
+          if (!q.statement || q.correct === undefined)
+            throw new Error(`Question ${n} in ${lv} (tf): missing statement or correct`);
+        } else {
+          throw new Error(`Question ${n} in ${lv}: unknown type "${t}"`);
+        }
       });
     });
     applyGeneratedQuiz(parsed, levels);

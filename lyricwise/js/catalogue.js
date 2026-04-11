@@ -145,11 +145,17 @@ export async function saveQuizLevel(songId, level, questions) {
 
   batch.set(quizRef, { level, songId, questions, updatedAt: now }, { merge: true });
 
-  // Atomically add level to availableLevels (read current first)
-  const songSnap = await getDoc(songRef);
-  const existing = songSnap.exists() ? (songSnap.data().availableLevels ?? []) : [];
-  const merged   = Array.from(new Set([...existing, level])).sort();
-  batch.update(songRef, { availableLevels: merged, updatedAt: now });
+  // Atomically add level to availableLevels and update quizSchema
+  const songSnap   = await getDoc(songRef);
+  const songData   = songSnap.exists() ? songSnap.data() : {};
+  const existing   = songData.availableLevels ?? [];
+  const merged     = Array.from(new Set([...existing, level])).sort();
+  // Detect schema: v2 if any question has a 'type' field; v1 otherwise.
+  // Once v2 is set it is never downgraded (a song can have mixed levels).
+  const detectedSchema = questions.length > 0 && questions[0]?.type ? 'v2' : 'v1';
+  const currentSchema  = songData.quizSchema ?? 'v1';
+  const nextSchema     = (currentSchema === 'v2' || detectedSchema === 'v2') ? 'v2' : 'v1';
+  batch.update(songRef, { availableLevels: merged, quizSchema: nextSchema, updatedAt: now });
 
   await batch.commit();
   _cache.quizzes.delete(`${songId}:${level}`);

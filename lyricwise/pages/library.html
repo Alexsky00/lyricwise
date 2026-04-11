@@ -88,12 +88,17 @@
     const completed = hasAnyScore(song.id)
       ? '<span class="completed-badge">✓ Played</span>' : '';
 
+    const schemaLabel = song.quizSchema === 'v2'
+      ? '<span class="quiz-schema-badge quiz-schema-v2">Alpha model</span>'
+      : '<span class="quiz-schema-badge quiz-schema-v1">Legacy model</span>';
+
     card.innerHTML = `
       <div class="song-card-art">${song.icon}</div>
       <div class="song-card-body">
         <div class="song-card-title">${song.title} ${completed}</div>
         <div class="song-card-artist">${song.artist}</div>
         <div class="level-badges">${badges}</div>
+        ${schemaLabel}
       </div>`;
 
     // Click on card → level selection page

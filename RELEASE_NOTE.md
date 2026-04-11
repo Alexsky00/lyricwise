@@ -2,6 +2,71 @@
 
 ---
 
+## v2.0-Alpha
+*April 2026*
+
+---
+
+### New features
+
+**Structured quiz schema (v2)**
+Quizzes now follow a fixed 24-question structure per level, divided into 3 sections of 8 questions each:
+- 📚 Vocabulary — Exercise A: `match` (term → definition) · Exercise B: `mcq` (4 options)
+- 🎧 Listening — Exercise A: `mcq` (2 options, "what do you hear") · Exercise B: `fill` (complete the lyric)
+- 📖 Reading — Exercise A: `tf` (True/False) · Exercise B: `mcq` (comprehension, 4 options)
+
+Difficulty scales with CEFR level: word bank present at A1/A2 for fill questions, absent at B1+.
+Old 5-question MCQ quizzes (v1) remain fully functional — no breaking change.
+
+**4 new question types**
+- `match` — term-to-definition matching; 4 sibling definitions used as options, shuffled at runtime
+- `tf` — True/False statement; shows correction text when answer is wrong
+- `fill` — fill-in-the-blank lyric line; accepts typed input or word-bank chip selection
+- `mcq` extended — supports 2-option variant for Listening A questions
+
+**Section headers in quiz**
+A section/exercise label (`📚 Vocabulary · Exercise A`) slides in whenever the section or exercise changes during a quiz.
+
+**Library — quiz model label**
+Each song card now shows a label indicating the quiz model in use:
+- `Legacy model` — original 5-question MCQ format
+- `Alpha model` — new 24-question structured format (v2)
+The label is set automatically when a quiz is saved via the admin panel.
+
+---
+
+### Admin panel
+
+**Updated AI generation prompt**
+The "Generate quiz with AI" prompt now requests the full 24-question v2 structure with typed questions (match/mcq/fill/tf), section metadata, and CEFR difficulty scaling instructions.
+
+**Updated JSON validation**
+The "Paste AI JSON" import now validates each question by type (`match`, `mcq`, `fill`, `tf`) instead of requiring the old `options`/`lyrics` fields on every question.
+
+---
+
+### Bug fixes
+
+- **Fill submit button disabled after first answer** — `_renderFillArea` now re-enables the Check button on each new question; previously it stayed disabled from question 13 onwards
+- **Leaderboard "you" row border** — removed overriding horizontal borders; row now uses background highlight + left accent only, keeping table separators visually consistent
+- **Score tier for 24-question quizzes** — tier thresholds now percentage-based (50/70/85/100%) instead of absolute counts, compatible with any question total
+
+---
+
+### Technical changes
+
+- `js/quiz.js` — `_prepareQuestions()`: converts `match`/`tf` to MCQ-compatible format at init; shuffles `mcq` only; `answer()` branches on `fill` (string compare) vs others (index compare)
+- `js/catalogue.js` — `saveQuizLevel()` detects schema version from questions and writes `quizSchema: 'v1'|'v2'` to the song document
+- `js/ui.js` — version bumped to `2.0-Alpha`
+- `pages/quiz.html` — `renderQuestion()` dispatches by type; `_renderFillArea()` / `_renderOptions()` helpers; `submitFill()` / `pickWord()` added to `window`
+- `pages/library.html` — schema label rendered from `song.quizSchema`
+- `pages/leaderboard.html` — "you" row style corrected
+- `css/style.css` — new styles: `.quiz-section-header`, `.match-term`, `.tf-label`, `.quiz-options-tf`, `.quiz-fill-input`, `.quiz-fill-submit`, `.quiz-wordbank`, `.wordbank-chip`, `.quiz-schema-badge`
+
+---
+
+---
+
 ## v1.9-Alpha
 *April 2026*
 
