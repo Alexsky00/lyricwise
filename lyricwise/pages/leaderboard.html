@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LyricWise — Leaderboard</title>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&display=swap" rel="stylesheet"/>
+</head>
+<body>
+<nav id="main-nav"></nav>
+
+<div class="stats-header">
+  <div>
+    <h1>🏆 Leaderboard</h1>
+    <p>Top players across all songs and levels</p>
+  </div>
+</div>
+
+<div class="lb-body" id="lb-body">
+  <div class="lb-loading">Loading…</div>
+</div>
+
+<script type="module">
+  import { renderNav, renderFooter } from '../js/ui.js';
+  import { requireAuth }            from '../js/auth.js';
+  import {
+    collection, getDocs, orderBy, query, limit,
+  } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+  import { db } from '../js/firebase-db.js';
+
+  const { profile } = await requireAuth();
+  renderNav('leaderboard', profile);
+  renderFooter();
+
+  const container = document.getElementById('lb-body');
+
+  try {
+    const snap = await getDocs(
+      query(collection(db, 'leaderboard'), orderBy('perfectScores', 'desc'), limit(100))
+    );
+
+    let entries = snap.docs.map(d => ({ uid: d.id, ...d.data() }));
+
+    // Secondary sort: avgPct, then levelsCompleted
+    entries.sort((a, b) =>
+      (b.perfectScores - a.perfectScores) ||
+      (b.avgPct - a.avgPct) ||
+      (b.levelsCompleted - a.levelsCompleted)
+    );
+
+    if (entries.length === 0) {
+      container.innerHTML = `<div class="lb-empty">
+        <div style="font-size:3rem;">🎵</div>
+        <p>No scores yet — be the first to play!</p>
+      </div>`;
+    } else {
+      const medals = ['🥇', '🥈', '🥉'];
+
+      container.innerHTML = `
+        <div class="lb-table-wrap">
+          <table class="lb-table">
+            <thead>
+              <tr>
+                <th class="lb-th-rank">Rank</th>
+                <th class="lb-th-player">Player</th>
+                <th>Quizzes</th>
+                <th>Levels</th>
+                <th>⭐ Perfects</th>
+                <th>Avg %</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${entries.map((e, i) => {
+                const rank      = i + 1;
+                const medal     = medals[i] ?? `#${rank}`;
+                const isMe      = e.uid === profile?.uid;
+                const rowClass  = isMe ? ' lb-row-me' : '';
+                const youBadge  = isMe ? '<span class="lb-you">you</span>' : '';
+                const bar       = `<div class="lb-avg-bar"><div class="lb-avg-fill" style="width:${e.avgPct ?? 0}%"></div></div>`;
+                return `<tr class="lb-row${rowClass}">
+                  <td class="lb-rank">${medal}</td>
+                  <td class="lb-player">
+                    <span class="lb-smiley">${e.smiley ?? '🎵'}</span>
+                    <span class="lb-pseudo">${e.pseudo ?? 'Anonymous'}</span>
+                    ${youBadge}
+                  </td>
+                  <td class="lb-num">${e.totalQuizzes ?? 0}</td>
+                  <td class="lb-num">${e.levelsCompleted ?? 0}</td>
+                  <td class="lb-num lb-perfects">${e.perfectScores ?? 0}</td>
+                  <td class="lb-avg">${bar}<span>${e.avgPct ?? 0}%</span></td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>`;
+    }
+  } catch (err) {
+    container.innerHTML = `<div class="lb-empty">⚠ Failed to load leaderboard: ${err.message}</div>`;
+  }
+</script>
+<footer id="main-footer"></footer>
+</body>
+</html>

@@ -37,6 +37,9 @@
   <div class="admin-tab-nav">
     <button class="admin-tab-btn active" data-panel="panel-add">✨ Add Song</button>
     <button class="admin-tab-btn"        data-panel="panel-edit">✏️ Edit Quiz</button>
+    <button class="admin-tab-btn"        data-panel="panel-timestamps">⏱ Timestamps</button>
+    <button class="admin-tab-btn"        data-panel="panel-lyrics">🔍 Lyrics</button>
+    <button class="admin-tab-btn"        data-panel="panel-migrate">🔄 Migrate</button>
   </div>
 
   <!-- ═══════════════════════════════════════════════════════════════
@@ -70,27 +73,94 @@
     <!-- STEP 2: Icon -->
     <div class="admin-section">
       <h2>2. Song icon</h2>
+      <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.6rem;">
+        <label style="font-size:.8rem;color:var(--text-muted);white-space:nowrap;">Custom emoji:</label>
+        <input type="text" id="icon-custom" maxlength="4" placeholder="✍️"
+          style="width:3.5rem;text-align:center;font-size:1.3rem;padding:.2rem .4rem;border:1px solid var(--border);border-radius:6px;background:var(--card-bg);color:var(--text);"/>
+        <button class="admin-btn-tiny" id="icon-custom-btn">Use</button>
+        <span style="font-size:.75rem;color:var(--text-muted);">Selected: <span id="icon-preview">🎵</span></span>
+      </div>
       <div class="icon-picker" id="icon-picker">
+        <!-- ── Instruments ── -->
         <div class="icon-opt selected" data-icon="🎵">🎵</div>
+        <div class="icon-opt" data-icon="🎶">🎶</div>
+        <div class="icon-opt" data-icon="🎼">🎼</div>
         <div class="icon-opt" data-icon="🎸">🎸</div>
         <div class="icon-opt" data-icon="🎹">🎹</div>
-        <div class="icon-opt" data-icon="🎧">🎧</div>
-        <div class="icon-opt" data-icon="🎤">🎤</div>
         <div class="icon-opt" data-icon="🎷">🎷</div>
         <div class="icon-opt" data-icon="🎺">🎺</div>
         <div class="icon-opt" data-icon="🎻">🎻</div>
         <div class="icon-opt" data-icon="🥁">🥁</div>
-        <div class="icon-opt" data-icon="🪗">🪗</div>
-        <div class="icon-opt" data-icon="🎼">🎼</div>
-        <div class="icon-opt" data-icon="🎶">🎶</div>
+        <div class="icon-opt" data-icon="🪕">🪕</div>
+        <div class="icon-opt" data-icon="🎧">🎧</div>
+        <div class="icon-opt" data-icon="🎤">🎤</div>
+        <div class="icon-opt" data-icon="🎙">🎙</div>
+        <div class="icon-opt" data-icon="📻">📻</div>
+        <div class="icon-opt" data-icon="📯">📯</div>
+        <!-- ── Étoiles / énergie ── -->
         <div class="icon-opt" data-icon="🌟">🌟</div>
         <div class="icon-opt" data-icon="⭐">⭐</div>
-        <div class="icon-opt" data-icon="🔥">🔥</div>
+        <div class="icon-opt" data-icon="✨">✨</div>
         <div class="icon-opt" data-icon="💫">💫</div>
-        <div class="icon-opt" data-icon="🦸">🦸</div>
-        <div class="icon-opt" data-icon="🚀">🚀</div>
-        <div class="icon-opt" data-icon="🌊">🌊</div>
+        <div class="icon-opt" data-icon="🔥">🔥</div>
         <div class="icon-opt" data-icon="⚡">⚡</div>
+        <div class="icon-opt" data-icon="💥">💥</div>
+        <div class="icon-opt" data-icon="🌈">🌈</div>
+        <div class="icon-opt" data-icon="🌙">🌙</div>
+        <div class="icon-opt" data-icon="☀️">☀️</div>
+        <div class="icon-opt" data-icon="❄️">❄️</div>
+        <div class="icon-opt" data-icon="🌊">🌊</div>
+        <div class="icon-opt" data-icon="🌸">🌸</div>
+        <div class="icon-opt" data-icon="🌺">🌺</div>
+        <div class="icon-opt" data-icon="🌻">🌻</div>
+        <div class="icon-opt" data-icon="🍀">🍀</div>
+        <div class="icon-opt" data-icon="🌴">🌴</div>
+        <div class="icon-opt" data-icon="🌿">🌿</div>
+        <!-- ── Animaux ── -->
+        <div class="icon-opt" data-icon="🦋">🦋</div>
+        <div class="icon-opt" data-icon="🦁">🦁</div>
+        <div class="icon-opt" data-icon="🐺">🐺</div>
+        <div class="icon-opt" data-icon="🦊">🦊</div>
+        <div class="icon-opt" data-icon="🐦">🐦</div>
+        <div class="icon-opt" data-icon="🦅">🦅</div>
+        <div class="icon-opt" data-icon="🦜">🦜</div>
+        <div class="icon-opt" data-icon="🐬">🐬</div>
+        <div class="icon-opt" data-icon="🐉">🐉</div>
+        <!-- ── Personnes / objets ── -->
+        <div class="icon-opt" data-icon="🦸">🦸</div>
+        <div class="icon-opt" data-icon="🧙">🧙</div>
+        <div class="icon-opt" data-icon="🕺">🕺</div>
+        <div class="icon-opt" data-icon="💃">💃</div>
+        <div class="icon-opt" data-icon="👑">👑</div>
+        <div class="icon-opt" data-icon="💎">💎</div>
+        <div class="icon-opt" data-icon="🏆">🏆</div>
+        <div class="icon-opt" data-icon="🎯">🎯</div>
+        <div class="icon-opt" data-icon="🎭">🎭</div>
+        <div class="icon-opt" data-icon="🎬">🎬</div>
+        <div class="icon-opt" data-icon="🎪">🎪</div>
+        <div class="icon-opt" data-icon="🎠">🎠</div>
+        <div class="icon-opt" data-icon="🎡">🎡</div>
+        <div class="icon-opt" data-icon="🎢">🎢</div>
+        <!-- ── Lieux / voyage ── -->
+        <div class="icon-opt" data-icon="🚀">🚀</div>
+        <div class="icon-opt" data-icon="🌍">🌍</div>
+        <div class="icon-opt" data-icon="🏝️">🏝️</div>
+        <div class="icon-opt" data-icon="🗺️">🗺️</div>
+        <div class="icon-opt" data-icon="🏔️">🏔️</div>
+        <div class="icon-opt" data-icon="🌃">🌃</div>
+        <div class="icon-opt" data-icon="🌅">🌅</div>
+        <!-- ── Émotions / divers ── -->
+        <div class="icon-opt" data-icon="❤️">❤️</div>
+        <div class="icon-opt" data-icon="💜">💜</div>
+        <div class="icon-opt" data-icon="💚">💚</div>
+        <div class="icon-opt" data-icon="🖤">🖤</div>
+        <div class="icon-opt" data-icon="💔">💔</div>
+        <div class="icon-opt" data-icon="😈">😈</div>
+        <div class="icon-opt" data-icon="👻">👻</div>
+        <div class="icon-opt" data-icon="💀">💀</div>
+        <div class="icon-opt" data-icon="🤘">🤘</div>
+        <div class="icon-opt" data-icon="✌️">✌️</div>
+        <div class="icon-opt" data-icon="🙏">🙏</div>
       </div>
     </div>
 
@@ -114,26 +184,20 @@
       <pre class="admin-quiz-preview" id="quiz-preview"></pre>
     </div>
 
-    <!-- STEP 4: Export files -->
+    <!-- STEP 4: Save to Firestore -->
     <div class="admin-section">
-      <h2>4. Export files</h2>
-      <p class="admin-hint">Once the quiz is generated, download the three files to add to your project.</p>
+      <h2>4. Save to Firestore</h2>
+      <p class="admin-hint">Once the quiz is generated, save directly to the database.</p>
       <div class="admin-actions">
-        <button class="admin-btn admin-btn-primary"   id="export-song-btn"   disabled>↓ Download songs/[slug].js</button>
-        <button class="admin-btn admin-btn-secondary" id="export-lyrics-btn" disabled>↓ Download lyrics/[slug]-lyrics.js</button>
-        <button class="admin-btn admin-btn-secondary" id="export-quiz-btn"   disabled>↓ Download quizzes/[slug]-quiz.js</button>
+        <button class="admin-btn admin-btn-primary"   id="export-song-btn"   disabled>☁ Save song to Firestore</button>
+        <button class="admin-btn admin-btn-secondary" id="export-quiz-btn"   disabled>☁ Save quiz to Firestore</button>
+      </div>
+      <p class="admin-hint" style="margin-top:.5rem;">Backup downloads (optional):</p>
+      <div class="admin-actions">
+        <button class="admin-btn admin-btn-secondary" id="export-lyrics-btn" disabled>↓ Download lyrics .js</button>
+        <button class="admin-btn admin-btn-secondary" id="export-quiz-dl-btn" disabled>↓ Download quiz .js</button>
       </div>
       <div class="admin-status" id="export-status"></div>
-      <div class="admin-instructions" id="export-instructions" style="display:none;">
-        <p><strong>Next steps:</strong></p>
-        <ol>
-          <li>Move the downloaded files into <code>data/songs/</code>, <code>data/lyrics/</code> and <code>data/quizzes/</code></li>
-          <li>Open <code>data/index.js</code> and add the import lines shown below</li>
-          <li>Add the song to the <code>catalogue</code> array</li>
-          <li>Save, push to GitHub: <code>git add . && git commit -m "add [song]" && git push</code></li>
-        </ol>
-        <pre class="admin-code-snippet" id="index-snippet"></pre>
-      </div>
     </div>
 
   </div><!-- /panel-add -->
@@ -163,11 +227,101 @@
     </div>
 
     <div class="eq-save-bar" id="eq-save-bar" style="display:none;">
-      <button class="admin-btn admin-btn-primary" id="eq-save-btn">💾 Save file</button>
+      <button class="admin-btn admin-btn-primary"   id="eq-save-btn">☁ Save to Firestore</button>
       <button class="admin-btn admin-btn-secondary" id="eq-download-btn">↓ Download .js</button>
       <div class="admin-status" id="eq-save-status"></div>
     </div>
   </div><!-- /panel-edit -->
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       PANEL 3 — Timestamps
+  ════════════════════════════════════════════════════════════════ -->
+  <div class="admin-tab-panel" id="panel-timestamps">
+    <div class="admin-section">
+      <h2>Select song and level</h2>
+      <div class="eq-selectors">
+        <select id="ts-song-select">
+          <option value="">— Choose a song —</option>
+        </select>
+        <div class="level-tabs" id="ts-level-tabs">
+          <div class="level-tab" data-level="A1">A1</div>
+          <div class="level-tab" data-level="A2">A2</div>
+          <div class="level-tab" data-level="B1">B1</div>
+          <div class="level-tab" data-level="B2">B2</div>
+          <div class="level-tab" data-level="C1">C1</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="ts-editor-area">
+      <div class="eq-empty">Select a song and a level to edit timestamps.</div>
+    </div>
+
+    <div class="eq-save-bar" id="ts-save-bar" style="display:none;">
+      <button class="admin-btn admin-btn-primary" id="ts-save-btn">☁ Save timestamps to Firestore</button>
+      <div class="admin-status" id="ts-save-status"></div>
+    </div>
+  </div><!-- /panel-timestamps -->
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       PANEL 4 — Lyrics check & edit
+  ════════════════════════════════════════════════════════════════ -->
+  <div class="admin-tab-panel" id="panel-lyrics">
+    <div class="admin-section">
+      <h2>Select song and level</h2>
+      <div class="eq-selectors">
+        <select id="lc-song-select">
+          <option value="">— Choose a song —</option>
+        </select>
+        <div class="level-tabs" id="lc-level-tabs">
+          <div class="level-tab" data-level="A1">A1</div>
+          <div class="level-tab" data-level="A2">A2</div>
+          <div class="level-tab" data-level="B1">B1</div>
+          <div class="level-tab" data-level="B2">B2</div>
+          <div class="level-tab" data-level="C1">C1</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Excerpt match list -->
+    <div id="lc-excerpt-area">
+      <div class="eq-empty">Select a song and a level to check excerpts.</div>
+    </div>
+
+    <!-- Save excerpts bar -->
+    <div class="eq-save-bar" id="lc-excerpt-save-bar" style="display:none;">
+      <button class="admin-btn admin-btn-primary" id="lc-save-excerpts-btn">☁ Save excerpts to Firestore</button>
+      <div class="admin-status" id="lc-excerpt-status"></div>
+    </div>
+
+    <!-- Full lyrics editor -->
+    <div class="admin-section" id="lc-lyrics-section" style="display:none;">
+      <h2>Full lyrics</h2>
+      <textarea id="lc-lyrics-input" rows="18" style="font-family:monospace;font-size:.82rem;line-height:1.6;"></textarea>
+      <div class="admin-actions" style="margin-top:.5rem;">
+        <button class="admin-btn admin-btn-primary" id="lc-save-lyrics-btn">☁ Save lyrics to Firestore</button>
+        <div class="admin-status" id="lc-lyrics-status" style="display:inline-block;margin-left:1rem;"></div>
+      </div>
+    </div>
+  </div><!-- /panel-lyrics -->
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       PANEL 5 — Migrate static data to Firestore
+  ════════════════════════════════════════════════════════════════ -->
+  <div class="admin-tab-panel" id="panel-migrate">
+    <div class="admin-section">
+      <h2>Migrate static data to Firestore</h2>
+      <p class="admin-hint">
+        One-shot migration — reads all songs from the local JS files and writes them to Firestore.
+        Already-existing documents will be <strong>merged</strong> (not overwritten entirely).
+      </p>
+      <div class="admin-actions">
+        <button class="admin-btn admin-btn-primary" id="migrate-btn">🔄 Migrate all songs to Firestore</button>
+      </div>
+      <div class="admin-status" id="migrate-status"></div>
+      <div id="migrate-log" style="margin-top:1rem;font-size:.8rem;line-height:1.7;display:none;"></div>
+    </div>
+  </div><!-- /panel-migrate -->
 
   <!-- JSON paste modal -->
   <div id="json-modal" style="display:none;">
@@ -200,7 +354,11 @@
 
 <script type="module">
 import { renderNav, renderFooter, APP_VERSION } from '../js/ui.js';
-import { catalogue, hasQuiz } from '../data/index.js';
+import {
+  getCatalogue, hasQuizSync, getQuizQuestions,
+  saveSong, saveLyrics, saveQuizLevel,
+} from '../js/catalogue.js';
+import { MIGRATION_DATA } from '../js/migration-data.js';
 import { requireAuth } from '../js/auth.js';
 const { profile: _navProfile } = await requireAuth();
 renderNav('admin', _navProfile);
@@ -279,6 +437,16 @@ document.getElementById('icon-picker').addEventListener('click', e => {
   document.querySelectorAll('.icon-opt').forEach(o => o.classList.remove('selected'));
   opt.classList.add('selected');
   selectedIcon = opt.dataset.icon;
+  document.getElementById('icon-preview').textContent = selectedIcon;
+});
+
+document.getElementById('icon-custom-btn').addEventListener('click', () => {
+  const val = document.getElementById('icon-custom').value.trim();
+  if (!val) return;
+  selectedIcon = val;
+  document.querySelectorAll('.icon-opt').forEach(o => o.classList.remove('selected'));
+  document.getElementById('icon-preview').textContent = selectedIcon;
+  document.getElementById('icon-custom').value = '';
 });
 
 document.getElementById('level-tabs').addEventListener('click', e => {
@@ -346,86 +514,93 @@ function applyGeneratedQuiz(parsed, levels) {
   preview.style.display = 'block';
 
   setStatus('gen-status', 'success', `✅ Quiz generated — ${levels.length} levels × 5 questions`);
-  document.getElementById('export-song-btn').disabled   = false;
-  document.getElementById('export-lyrics-btn').disabled = false;
-  document.getElementById('export-quiz-btn').disabled   = false;
-  buildIndexSnippet();
+  document.getElementById('export-song-btn').disabled    = false;
+  document.getElementById('export-lyrics-btn').disabled  = false;
+  document.getElementById('export-quiz-btn').disabled    = false;
+  document.getElementById('export-quiz-dl-btn').disabled = false;
 }
 
-document.getElementById('export-song-btn').addEventListener('click', exportSongFile);
+document.getElementById('export-song-btn').addEventListener('click', saveSongToFirestore);
+document.getElementById('export-quiz-btn').addEventListener('click', saveQuizToFirestore);
 document.getElementById('export-lyrics-btn').addEventListener('click', exportLyricsFile);
-document.getElementById('export-quiz-btn').addEventListener('click', exportQuizFile);
+document.getElementById('export-quiz-dl-btn').addEventListener('click', exportQuizFile);
 
-function exportSongFile() {
+async function saveSongToFirestore() {
   const title  = document.getElementById('adm-title').value.trim();
   const artist = document.getElementById('adm-artist').value.trim();
   const ytId   = document.getElementById('adm-yt').value.trim();
   const spId   = document.getElementById('adm-sp').value.trim();
   const slug   = generatedSlug || slugify(title);
+  const lyrics = document.getElementById('adm-lyrics').value.trim();
+  const levels = generatedQuiz ? Object.keys(generatedQuiz) : [];
 
-  const content = `// data/songs/${slug}.js
-export const song = {
-  id:        '${slug}',
-  title:     '${title.replace(/'/g, "\\'")}',
-  artist:    '${artist.replace(/'/g, "\\'")}',
-  icon:      '${selectedIcon}',
-  youtubeId: '${ytId}',
-  spotifyId: '${spId}',
-};\n`;
+  if (!title || !artist) { setStatus('export-status', 'error', 'Title and artist are required.'); return; }
 
-  downloadFile(`${slug}.js`, content);
-  setStatus('export-status', 'success', `✅ songs/${slug}.js downloaded`);
-  document.getElementById('export-instructions').style.display = 'block';
+  setStatus('export-status', 'info', 'Saving to Firestore…');
+  try {
+    await saveSong({
+      id: slug, title, artist,
+      icon: selectedIcon,
+      youtubeId: ytId,
+      spotifyId: spId,
+      lyrics,
+      availableLevels: levels,
+    });
+    setStatus('export-status', 'success', `✅ Song "${title}" saved to Firestore`);
+  } catch (err) {
+    setStatus('export-status', 'error', `❌ ${err.message}`);
+  }
+}
+
+async function saveQuizToFirestore() {
+  if (!generatedQuiz) { setStatus('export-status', 'error', 'Generate the quiz first.'); return; }
+  const slug  = generatedSlug;
+  const levels = Object.keys(generatedQuiz);
+
+  setStatus('export-status', 'info', `Saving ${levels.length} level(s) to Firestore…`);
+  try {
+    for (const lv of levels) {
+      await saveQuizLevel(slug, lv, generatedQuiz[lv]);
+    }
+    setStatus('export-status', 'success', `✅ Quiz (${levels.join(', ')}) saved to Firestore`);
+  } catch (err) {
+    setStatus('export-status', 'error', `❌ ${err.message}`);
+  }
 }
 
 function exportLyricsFile() {
-  const title  = document.getElementById('adm-title').value.trim();
-  const artist = document.getElementById('adm-artist').value.trim();
+  const title      = document.getElementById('adm-title').value.trim();
+  const artist     = document.getElementById('adm-artist').value.trim();
   const lyricsText = document.getElementById('adm-lyrics').value.trim();
-  const slug   = generatedSlug || slugify(title);
-
-  const content = `// data/lyrics/${slug}-lyrics.js\n// ${title} — ${artist}\n\nexport const lyrics = \`${lyricsText.replace(/`/g, '\\`')}\`;\n`;
+  const slug       = generatedSlug || slugify(title);
+  const content    = `// data/lyrics/${slug}-lyrics.js\n// ${title} — ${artist}\n\nexport const lyrics = \`${lyricsText.replace(/`/g, '\\`')}\`;\n`;
   downloadFile(`${slug}-lyrics.js`, content);
-  setStatus('export-status', 'success', `✅ lyrics/${slug}-lyrics.js downloaded`);
-  document.getElementById('export-instructions').style.display = 'block';
+  setStatus('export-status', 'success', `✅ ${slug}-lyrics.js downloaded`);
 }
 
 function exportQuizFile() {
   if (!generatedQuiz) { setStatus('export-status', 'error', 'Generate the quiz first.'); return; }
-  const slug   = generatedSlug;
-  const title  = document.getElementById('adm-title').value.trim();
-  const artist = document.getElementById('adm-artist').value.trim();
+  const slug    = generatedSlug;
+  const title   = document.getElementById('adm-title').value.trim();
+  const artist  = document.getElementById('adm-artist').value.trim();
   const content = buildQuizFileContent(slug, title, artist, generatedQuiz);
   downloadFile(`${slug}-quiz.js`, content);
-  setStatus('export-status', 'success', `✅ quizzes/${slug}-quiz.js downloaded`);
-  document.getElementById('export-instructions').style.display = 'block';
-}
-
-function buildIndexSnippet() {
-  const slug    = generatedSlug;
-  const varName = slug.replace(/-/g, '_');
-  document.getElementById('index-snippet').textContent =
-`// In data/index.js — add these lines:
-
-import { song as ${varName} }           from './songs/${slug}.js';
-import { quiz as ${varName}Quiz }       from './quizzes/${slug}-quiz.js';
-import { lyrics as ${varName}Lyrics }   from './lyrics/${slug}-lyrics.js';
-
-// Then in the catalogue array:
-{ ...${varName}, quiz: ${varName}Quiz, lyrics: ${varName}Lyrics },`;
+  setStatus('export-status', 'success', `✅ ${slug}-quiz.js downloaded`);
 }
 
 // ════════════════════════════════════════════════════════════════════
 //  PANEL 2 — Edit Quiz
 // ════════════════════════════════════════════════════════════════════
 
-let eqSong      = null;   // current song object
+let eqSong      = null;   // current song object (from Firestore)
 let eqLevel     = null;   // current level string
+let eqQuestions = [];     // questions for the current level
 
-// Populate song selector from catalogue (skip coming-soon)
+// Populate song selector from Firestore catalogue (skip coming-soon)
 const songSelect = document.getElementById('eq-song-select');
+const catalogue  = await getCatalogue();
 catalogue
-  .filter(s => !s.comingSoon && s.quiz)
+  .filter(s => !s.comingSoon && s.availableLevels?.length)
   .forEach(s => {
     const opt = document.createElement('option');
     opt.value       = s.id;
@@ -436,7 +611,9 @@ catalogue
 songSelect.addEventListener('change', () => {
   eqSong  = catalogue.find(s => s.id === songSelect.value) || null;
   eqLevel = null;
+  eqQuestions = [];
   document.querySelectorAll('#eq-level-tabs .level-tab').forEach(t => t.classList.remove('active'));
+  updateLevelTabsAvailability();
   renderEditor();
 });
 
@@ -444,22 +621,31 @@ document.getElementById('eq-level-tabs').addEventListener('click', e => {
   const tab = e.target.closest('.level-tab');
   if (!tab || !eqSong) return;
   const level = tab.dataset.level;
-  if (!hasQuiz(eqSong.id, level)) return; // skip unavailable levels
+  if (!hasQuizSync(eqSong, level)) return;
   document.querySelectorAll('#eq-level-tabs .level-tab').forEach(t => t.classList.remove('active'));
   tab.classList.add('active');
   eqLevel = level;
-  renderEditor();
+  loadAndRenderEditor();
 });
 
-// Dim level tabs that have no quiz for the selected song
-songSelect.addEventListener('change', () => {
+function updateLevelTabsAvailability() {
   document.querySelectorAll('#eq-level-tabs .level-tab').forEach(tab => {
-    const available = eqSong && hasQuiz(eqSong.id, tab.dataset.level);
+    const available = eqSong && hasQuizSync(eqSong, tab.dataset.level);
     tab.style.opacity        = available ? '1' : '0.3';
     tab.style.pointerEvents  = available ? '' : 'none';
     tab.style.textDecoration = available ? '' : 'line-through';
   });
-});
+}
+
+async function loadAndRenderEditor() {
+  const area = document.getElementById('eq-editor-area');
+  area.innerHTML = '<div class="eq-empty">Loading questions…</div>';
+  document.getElementById('eq-save-bar').style.display = 'none';
+
+  const questions = await getQuizQuestions(eqSong.id, eqLevel);
+  eqQuestions = questions || [];
+  renderEditor();
+}
 
 function renderEditor() {
   const area    = document.getElementById('eq-editor-area');
@@ -471,15 +657,14 @@ function renderEditor() {
     return;
   }
 
-  const questions = eqSong.quiz[eqLevel];
-  if (!questions || !questions.length) {
+  if (!eqQuestions.length) {
     area.innerHTML = '<div class="eq-empty">No questions found for this level.</div>';
     saveBar.style.display = 'none';
     return;
   }
 
   const letters = ['A', 'B', 'C', 'D'];
-  area.innerHTML = questions.map((q, qi) => `
+  area.innerHTML = eqQuestions.map((q, qi) => `
     <div class="eq-card" data-qi="${qi}">
       <div class="eq-card-header">
         <span class="eq-card-title">Question ${qi + 1}</span>
@@ -532,64 +717,417 @@ function escAttr(s) { return String(s).replace(/"/g,'&quot;'); }
 function collectEdits() {
   const cards = document.querySelectorAll('.eq-card');
   return Array.from(cards).map(card => {
-    const qi      = parseInt(card.dataset.qi);
-    const lyrics  = card.querySelector('.eq-lyrics').value;
-    const question = card.querySelector('.eq-question').value;
-    const options  = Array.from(card.querySelectorAll('.eq-option')).map(i => i.value);
-    const correct  = parseInt(card.querySelector(`input[name="correct-${qi}"]:checked`)?.value ?? 0);
+    const qi        = parseInt(card.dataset.qi);
+    const lyrics    = card.querySelector('.eq-lyrics').value;
+    const question  = card.querySelector('.eq-question').value;
+    const options   = Array.from(card.querySelectorAll('.eq-option')).map(i => i.value);
+    const correct   = parseInt(card.querySelector(`input[name="correct-${qi}"]:checked`)?.value ?? 0);
     const timestamp = parseInt(card.querySelector('.eq-timestamp').value) || 0;
     const feedback  = card.querySelector('.eq-feedback').value;
     return { lyrics, question, options, correct, timestamp, feedback };
   });
 }
 
-// Save button — File System Access API
+// Save to Firestore
 document.getElementById('eq-save-btn').addEventListener('click', async () => {
   if (!eqSong || !eqLevel) return;
-
-  const edits   = collectEdits();
-  const updated = buildUpdatedQuiz(edits);
-  const content = buildQuizFileContent(eqSong.id, eqSong.title, eqSong.artist, updated);
-  const filename = `${eqSong.id}-quiz.js`;
-
-  if ('showSaveFilePicker' in window) {
-    try {
-      const handle = await window.showSaveFilePicker({
-        suggestedName: filename,
-        types: [{ description: 'JavaScript file', accept: { 'text/javascript': ['.js'] } }],
-      });
-      const writable = await handle.createWritable();
-      await writable.write(content);
-      await writable.close();
-      setStatus('eq-save-status', 'success', `✅ ${filename} saved — reload the app to see changes`);
-    } catch (err) {
-      if (err.name !== 'AbortError') setStatus('eq-save-status', 'error', `❌ ${err.message}`);
-    }
-  } else {
-    // Fallback: download
-    downloadFile(filename, content);
-    setStatus('eq-save-status', 'info', `File System API not supported — file downloaded instead. Move it to data/quizzes/.`);
+  const edits = collectEdits();
+  setStatus('eq-save-status', 'info', 'Saving to Firestore…');
+  try {
+    await saveQuizLevel(eqSong.id, eqLevel, edits);
+    eqQuestions = edits;
+    setStatus('eq-save-status', 'success', `✅ ${eqSong.title} / ${eqLevel} saved to Firestore`);
+  } catch (err) {
+    setStatus('eq-save-status', 'error', `❌ ${err.message}`);
   }
 });
 
-// Download button — always available
+// Download .js backup
 document.getElementById('eq-download-btn').addEventListener('click', () => {
   if (!eqSong || !eqLevel) return;
   const edits   = collectEdits();
-  const updated = buildUpdatedQuiz(edits);
-  const content = buildQuizFileContent(eqSong.id, eqSong.title, eqSong.artist, updated);
-  downloadFile(`${eqSong.id}-quiz.js`, content);
-  setStatus('eq-save-status', 'success', `✅ Downloaded — move to data/quizzes/ to apply changes`);
+  const content = buildQuizFileContent(eqSong.id, eqSong.title, eqSong.artist, { [eqLevel]: edits });
+  downloadFile(`${eqSong.id}-${eqLevel}-quiz.js`, content);
+  setStatus('eq-save-status', 'success', `✅ ${eqSong.id}-${eqLevel}-quiz.js downloaded`);
 });
 
-function buildUpdatedQuiz(editedQuestions) {
-  // Merge edits into existing quiz (keep other levels untouched)
-  const result = {};
-  Object.keys(eqSong.quiz).forEach(lv => {
-    result[lv] = lv === eqLevel ? editedQuestions : eqSong.quiz[lv];
+// ════════════════════════════════════════════════════════════════════
+//  PANEL 3 — Timestamps
+// ════════════════════════════════════════════════════════════════════
+
+let tsSong      = null;
+let tsLevel     = null;
+let tsQuestions = [];
+
+// Populate song selector
+const tsSongSelect = document.getElementById('ts-song-select');
+catalogue
+  .filter(s => !s.comingSoon && s.availableLevels?.length)
+  .forEach(s => {
+    const opt = document.createElement('option');
+    opt.value       = s.id;
+    opt.textContent = `${s.icon}  ${s.title} — ${s.artist}`;
+    tsSongSelect.appendChild(opt);
   });
-  return result;
+
+tsSongSelect.addEventListener('change', () => {
+  tsSong  = catalogue.find(s => s.id === tsSongSelect.value) || null;
+  tsLevel = null;
+  tsQuestions = [];
+  document.querySelectorAll('#ts-level-tabs .level-tab').forEach(t => t.classList.remove('active'));
+  // Update level tab availability
+  document.querySelectorAll('#ts-level-tabs .level-tab').forEach(tab => {
+    const available = tsSong && hasQuizSync(tsSong, tab.dataset.level);
+    tab.style.opacity        = available ? '1' : '0.3';
+    tab.style.pointerEvents  = available ? '' : 'none';
+    tab.style.textDecoration = available ? '' : 'line-through';
+  });
+  renderTsEditor();
+});
+
+document.getElementById('ts-level-tabs').addEventListener('click', e => {
+  const tab = e.target.closest('.level-tab');
+  if (!tab || !tsSong) return;
+  if (!hasQuizSync(tsSong, tab.dataset.level)) return;
+  document.querySelectorAll('#ts-level-tabs .level-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  tsLevel = tab.dataset.level;
+  loadAndRenderTsEditor();
+});
+
+async function loadAndRenderTsEditor() {
+  const area = document.getElementById('ts-editor-area');
+  area.innerHTML = '<div class="eq-empty">Loading…</div>';
+  document.getElementById('ts-save-bar').style.display = 'none';
+  const questions = await getQuizQuestions(tsSong.id, tsLevel);
+  tsQuestions = questions || [];
+  renderTsEditor();
 }
+
+function renderTsEditor() {
+  const area    = document.getElementById('ts-editor-area');
+  const saveBar = document.getElementById('ts-save-bar');
+
+  if (!tsSong || !tsLevel) {
+    area.innerHTML = '<div class="eq-empty">Select a song and a level to edit timestamps.</div>';
+    saveBar.style.display = 'none';
+    return;
+  }
+  if (!tsQuestions.length) {
+    area.innerHTML = '<div class="eq-empty">No questions found for this level.</div>';
+    saveBar.style.display = 'none';
+    return;
+  }
+
+  const spLink = tsSong.spotifyId
+    ? `<a href="https://open.spotify.com/track/${tsSong.spotifyId}" target="_blank" rel="noopener" class="ts-sp-btn">♫ Open in Spotify</a>`
+    : '';
+
+  function toMmSs(totalSec) {
+    const s = parseInt(totalSec) || 0;
+    return { m: Math.floor(s / 60), s: s % 60 };
+  }
+
+  area.innerHTML = `
+    ${spLink ? `<div style="margin-bottom:.75rem;">${spLink}</div>` : ''}
+    <table class="ts-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Excerpt</th>
+          <th>Timestamp</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${tsQuestions.map((q, i) => {
+          const firstLine = q.lyrics.split('\n')[0].trim();
+          const preview   = firstLine.length > 55 ? firstLine.slice(0, 55) + '…' : firstLine;
+          const { m, s }  = toMmSs(q.timestamp);
+          return `<tr>
+            <td class="ts-num">${i + 1}</td>
+            <td class="ts-excerpt" title="${escAttr(q.lyrics)}">${escHtml(preview)}</td>
+            <td class="ts-ts-cell">
+              <input type="number" class="ts-min" data-qi="${i}" value="${m}" min="0" max="59"/>
+              <span class="ts-unit">min</span>
+              <input type="number" class="ts-sec" data-qi="${i}" value="${s}" min="0" max="59"/>
+              <span class="ts-unit">sec</span>
+            </td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>`;
+
+  saveBar.style.display = 'flex';
+  document.getElementById('ts-save-status').className = 'admin-status';
+  document.getElementById('ts-save-status').textContent = '';
+}
+
+document.getElementById('ts-save-btn').addEventListener('click', async () => {
+  if (!tsSong || !tsLevel || !tsQuestions.length) return;
+
+  // Merge edited timestamps back into questions (mm:ss → total seconds)
+  const updated = tsQuestions.map((q, i) => {
+    const m = parseInt(document.querySelector(`.ts-min[data-qi="${i}"]`)?.value) || 0;
+    const s = parseInt(document.querySelector(`.ts-sec[data-qi="${i}"]`)?.value) || 0;
+    return { ...q, timestamp: m * 60 + s };
+  });
+
+  setStatus('ts-save-status', 'info', 'Saving…');
+  try {
+    await saveQuizLevel(tsSong.id, tsLevel, updated);
+    tsQuestions = updated;
+    setStatus('ts-save-status', 'success', `✅ Timestamps saved — ${tsSong.title} / ${tsLevel}`);
+  } catch (err) {
+    setStatus('ts-save-status', 'error', `❌ ${err.message}`);
+  }
+});
+
+// ════════════════════════════════════════════════════════════════════
+//  PANEL 4 — Lyrics check & edit
+// ════════════════════════════════════════════════════════════════════
+
+let lcSong      = null;
+let lcLevel     = null;
+let lcQuestions = [];
+let lcLyrics    = '';
+
+// Populate song selector (all songs with lyrics)
+const lcSongSelect = document.getElementById('lc-song-select');
+catalogue.forEach(s => {
+  const opt = document.createElement('option');
+  opt.value       = s.id;
+  opt.textContent = `${s.icon}  ${s.title} — ${s.artist}`;
+  lcSongSelect.appendChild(opt);
+});
+
+lcSongSelect.addEventListener('change', async () => {
+  lcSong  = catalogue.find(s => s.id === lcSongSelect.value) || null;
+  lcLevel = null;
+  lcQuestions = [];
+  lcLyrics    = lcSong?.lyrics ?? '';
+  document.querySelectorAll('#lc-level-tabs .level-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('#lc-level-tabs .level-tab').forEach(tab => {
+    const available = lcSong && hasQuizSync(lcSong, tab.dataset.level);
+    tab.style.opacity        = available ? '1' : '0.3';
+    tab.style.pointerEvents  = available ? '' : 'none';
+    tab.style.textDecoration = available ? '' : 'line-through';
+  });
+  renderLcExcerpts();
+  renderLcLyrics();
+});
+
+document.getElementById('lc-level-tabs').addEventListener('click', e => {
+  const tab = e.target.closest('.level-tab');
+  if (!tab || !lcSong) return;
+  if (!hasQuizSync(lcSong, tab.dataset.level)) return;
+  document.querySelectorAll('#lc-level-tabs .level-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  lcLevel = tab.dataset.level;
+  loadAndRenderLcExcerpts();
+});
+
+async function loadAndRenderLcExcerpts() {
+  const area = document.getElementById('lc-excerpt-area');
+  area.innerHTML = '<div class="eq-empty">Loading…</div>';
+  document.getElementById('lc-excerpt-save-bar').style.display = 'none';
+  const questions = await getQuizQuestions(lcSong.id, lcLevel);
+  lcQuestions = questions || [];
+  renderLcExcerpts();
+}
+
+// ── Excerpt matching (mirrors quiz.html logic) ────────────────────
+function matchExcerpt(lyrics, excerpt) {
+  if (!lyrics || !excerpt) return null;
+  const norm = s => s.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  const rawL = norm(lyrics);
+  const rawE = norm(excerpt);
+
+  let idx = rawL.indexOf(rawE);
+  if (idx !== -1) return { idx, len: rawE.length, type: 'exact' };
+
+  const pattern = rawE
+    .split(/\n/)
+    .map(line => line.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+    .join('[\\s\\S]{0,6}');
+  const m = rawL.match(new RegExp(pattern));
+  if (m) return { idx: m.index, len: m[0].length, type: 'fuzzy' };
+
+  return null;
+}
+
+function renderLcExcerpts() {
+  const area    = document.getElementById('lc-excerpt-area');
+  const saveBar = document.getElementById('lc-excerpt-save-bar');
+
+  if (!lcSong || !lcLevel) {
+    area.innerHTML = '<div class="eq-empty">Select a song and a level to check excerpts.</div>';
+    saveBar.style.display = 'none';
+    return;
+  }
+  if (!lcQuestions.length) {
+    area.innerHTML = '<div class="eq-empty">No questions for this level.</div>';
+    saveBar.style.display = 'none';
+    return;
+  }
+
+  area.innerHTML = lcQuestions.map((q, i) => {
+    const match   = matchExcerpt(lcLyrics, q.lyrics);
+    const status  = !lcLyrics
+      ? `<span class="lc-badge lc-no-lyrics">⚠ No lyrics loaded</span>`
+      : match?.type === 'exact'
+        ? `<span class="lc-badge lc-ok">✅ Exact match</span>`
+        : match?.type === 'fuzzy'
+          ? `<span class="lc-badge lc-fuzzy">~✅ Fuzzy match</span>`
+          : `<span class="lc-badge lc-fail">❌ Not found</span>`;
+
+    // Context: up to 2 lines around the match in lyrics
+    let context = '';
+    if (match && lcLyrics) {
+      const raw    = lcLyrics.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+      const before = raw.slice(Math.max(0, match.idx - 80), match.idx);
+      const matched = raw.slice(match.idx, match.idx + match.len);
+      const after  = raw.slice(match.idx + match.len, match.idx + match.len + 80);
+      const esc    = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+      context = `<div class="lc-context">…${esc(before)}<mark class="lc-mark">${esc(matched)}</mark>${esc(after)}…</div>`;
+    }
+
+    return `<div class="lc-card">
+      <div class="lc-card-header">
+        <span class="eq-card-title">Q${i + 1}</span>
+        ${status}
+      </div>
+      <div class="eq-field">
+        <label>Excerpt <span class="field-hint">— editable</span></label>
+        <textarea class="lc-excerpt-input" data-qi="${i}" rows="3">${escHtml(q.lyrics)}</textarea>
+      </div>
+      ${context}
+    </div>`;
+  }).join('');
+
+  // Re-check on excerpt edit
+  area.querySelectorAll('.lc-excerpt-input').forEach(ta => {
+    ta.addEventListener('input', () => {
+      const qi    = parseInt(ta.dataset.qi);
+      const card  = ta.closest('.lc-card');
+      const match = matchExcerpt(lcLyrics, ta.value);
+      const badge = card.querySelector('.lc-badge');
+      if (badge) {
+        badge.className = match?.type === 'exact' ? 'lc-badge lc-ok'
+                        : match?.type === 'fuzzy'  ? 'lc-badge lc-fuzzy'
+                        : 'lc-badge lc-fail';
+        badge.textContent = match?.type === 'exact' ? '✅ Exact match'
+                          : match?.type === 'fuzzy'  ? '~✅ Fuzzy match'
+                          : '❌ Not found';
+      }
+    });
+  });
+
+  saveBar.style.display = 'flex';
+  document.getElementById('lc-excerpt-status').className = 'admin-status';
+  document.getElementById('lc-excerpt-status').textContent = '';
+}
+
+function renderLcLyrics() {
+  const section = document.getElementById('lc-lyrics-section');
+  if (!lcSong) { section.style.display = 'none'; return; }
+  section.style.display = '';
+  document.getElementById('lc-lyrics-input').value = lcLyrics;
+  document.getElementById('lc-lyrics-status').className = 'admin-status';
+  document.getElementById('lc-lyrics-status').textContent = '';
+}
+
+// Live-update match status when lyrics are edited
+document.getElementById('lc-lyrics-input').addEventListener('input', () => {
+  lcLyrics = document.getElementById('lc-lyrics-input').value;
+  // Re-render excerpts without reloading from Firestore
+  if (lcQuestions.length) renderLcExcerpts();
+});
+
+// Save excerpts
+document.getElementById('lc-save-excerpts-btn').addEventListener('click', async () => {
+  if (!lcSong || !lcLevel || !lcQuestions.length) return;
+  const updated = lcQuestions.map((q, i) => {
+    const ta = document.querySelector(`.lc-excerpt-input[data-qi="${i}"]`);
+    return { ...q, lyrics: ta?.value ?? q.lyrics };
+  });
+  setStatus('lc-excerpt-status', 'info', 'Saving…');
+  try {
+    await saveQuizLevel(lcSong.id, lcLevel, updated);
+    lcQuestions = updated;
+    setStatus('lc-excerpt-status', 'success', `✅ Excerpts saved — ${lcSong.title} / ${lcLevel}`);
+  } catch (err) {
+    setStatus('lc-excerpt-status', 'error', `❌ ${err.message}`);
+  }
+});
+
+// Save lyrics
+document.getElementById('lc-save-lyrics-btn').addEventListener('click', async () => {
+  if (!lcSong) return;
+  setStatus('lc-lyrics-status', 'info', 'Saving…');
+  try {
+    await saveLyrics(lcSong.id, lcLyrics);
+    // Update local catalogue cache so match checks are immediately accurate
+    const cached = catalogue.find(s => s.id === lcSong.id);
+    if (cached) cached.lyrics = lcLyrics;
+    setStatus('lc-lyrics-status', 'success', '✅ Lyrics saved');
+    if (lcQuestions.length) renderLcExcerpts();
+  } catch (err) {
+    setStatus('lc-lyrics-status', 'error', `❌ ${err.message}`);
+  }
+});
+
+// ════════════════════════════════════════════════════════════════════
+//  PANEL 5 — Migrate static data to Firestore
+// ════════════════════════════════════════════════════════════════════
+
+document.getElementById('migrate-btn').addEventListener('click', async () => {
+  const btn    = document.getElementById('migrate-btn');
+  const log    = document.getElementById('migrate-log');
+  btn.disabled = true;
+  log.style.display = 'block';
+  log.innerHTML     = '';
+  setStatus('migrate-status', 'info', 'Migration in progress…');
+
+  let ok = 0, fail = 0;
+
+  for (const entry of MIGRATION_DATA) {
+    const { song: s, lyrics, quiz } = entry;
+    const line = document.createElement('div');
+    line.textContent = `⏳ ${s.title}…`;
+    log.appendChild(line);
+
+    try {
+      // Build the song payload
+      const availableLevels = Object.keys(quiz || {}).filter(lv => Array.isArray(quiz[lv]) && quiz[lv].length);
+      await saveSong({
+        id: s.id, title: s.title, artist: s.artist,
+        icon: s.icon, youtubeId: s.youtubeId, spotifyId: s.spotifyId,
+        lyrics: lyrics ?? '',
+        availableLevels,
+      });
+
+      // Save lyrics separately if needed
+      if (typeof lyrics === 'string' && lyrics.trim()) {
+        await saveLyrics(s.id, lyrics);
+      }
+
+      // Save each quiz level
+      for (const lv of availableLevels) {
+        await saveQuizLevel(s.id, lv, quiz[lv]);
+      }
+
+      line.textContent = `✅ ${s.title} — ${availableLevels.length} level(s) saved`;
+      ok++;
+    } catch (err) {
+      line.textContent = `❌ ${s.title} — ${err.message}`;
+      fail++;
+    }
+  }
+
+  btn.disabled = false;
+  setStatus('migrate-status', fail === 0 ? 'success' : 'error',
+    `Done: ${ok} succeeded, ${fail} failed.`);
+});
 
 // ── Shared helpers ────────────────────────────────────────────────
 

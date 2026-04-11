@@ -2,6 +2,115 @@
 
 ---
 
+## v1.9-Alpha
+*April 2026*
+
+---
+
+### New features
+
+**Firestore database — all app data migrated**
+Songs, lyrics, and quiz questions are now stored in Firestore instead of static JS files.
+All pages load catalogue data asynchronously from the database.
+
+Firestore structure:
+- `songs/{songId}` — song metadata + full lyrics + `availableLevels[]`
+- `songs/{songId}/quizzes/{level}` — quiz questions array
+- `users/{uid}/scores/{songId}` — quiz scores per level (replaces localStorage-only storage)
+- `leaderboard/{uid}` — public stats updated automatically after each quiz
+
+**Quiz scores synced across devices**
+Scores are now persisted in Firestore in addition to the localStorage cache.
+On login, `loadScoresFromFirestore()` hydrates the local cache from the database.
+Score writes remain fire-and-forget (sync API preserved — no breaking changes to callers).
+
+**Leaderboard**
+New page `pages/leaderboard.html` — global ranking of all players.
+Sorted by perfect scores → average % → levels completed.
+Columns: Rank (🥇🥈🥉), Player (smiley + pseudo), Quizzes, Levels, ⭐ Perfects, Avg %.
+Current user's row is highlighted. Updated automatically after every quiz.
+
+**Songs without quiz → "Coming Soon"**
+Songs with no `availableLevels` in Firestore are automatically shown with a "Coming Soon"
+badge and sorted to the end of the library, without requiring a manual `comingSoon` flag.
+
+---
+
+### Admin panel — new tabs
+
+**⏱ Timestamps tab**
+Dedicated view for editing quiz seek timestamps. Shows each excerpt with `mm` / `sec`
+inputs side by side and a ♫ Open in Spotify button for live calibration.
+Saves only timestamps to Firestore (other question fields untouched).
+
+**🔍 Lyrics tab**
+Side-by-side excerpt/lyrics checker. Each excerpt shows a real-time match badge:
+`✅ Exact match` / `~✅ Fuzzy match` / `❌ Not found`.
+Matched text is highlighted in context within the full lyrics.
+Excerpts and lyrics are independently editable and saveable to Firestore.
+
+**🔄 Migrate tab**
+One-shot migration panel — reads all static JS data files and writes them to Firestore
+with a per-song progress log.
+
+**Add Song — Save to Firestore**
+Step 4 now saves song + quiz directly to Firestore (☁ buttons) instead of downloading
+JS files. Download buttons kept as backup.
+
+**Edit Quiz — Save to Firestore**
+Save button now writes directly to Firestore via `saveQuizLevel()`.
+
+---
+
+### Technical changes
+
+- `js/firebase-db.js` — new: centralised `db` export
+- `js/catalogue.js` — new: Firestore read/write + 5-min in-memory cache
+- `js/migration-data.js` — new: imports all static data for migration
+- `js/storage.js` — Firestore score persistence + leaderboard update on `saveScore`
+- `js/auth.js` — imports `firebase-db.js`; calls `loadScoresFromFirestore` + `setCurrentUserProfile` on login
+- `js/router.js` — `leaderboard` added to page list
+- `js/ui.js` — 🏆 Leaderboard link added to nav; version bumped to `1.9-Alpha`
+- `pages/quiz.html` — async: `getSong` + `getQuizQuestions` from catalogue
+- `pages/library.html` — async: `getCatalogue`; auto Coming Soon for songs without levels
+- `pages/stats.html` — async: `getCatalogue`; `resetAll` awaited
+- `pages/leaderboard.html` — new page
+- `pages/admin.html` — 5 tabs; extended emoji picker + custom emoji input
+- `firestore.rules` — rules for songs, users, scores, leaderboard; deployed via Firebase CLI
+
+---
+
+---
+
+## v1.8-Alpha
+*April 2026*
+
+---
+
+### Bug fix
+
+**Randomised quiz answer options**
+Quiz answer options are now shuffled at the start of each quiz session. Previously the correct
+answer was almost always in position B because all quiz data files place the correct answer
+at index `1`.
+
+The shuffle runs in `quiz.js → init()` using a Fisher-Yates algorithm applied to each
+question's `options` array. The `correct` index is remapped to match the new order. Source
+data files are unchanged — the shuffle happens at runtime only, so every attempt gets a
+different layout.
+
+---
+
+### Technical changes
+
+- `js/quiz.js` — `_shuffleOptions(question)` helper; `init()` now maps every question
+  through `_shuffleOptions` before storing in state
+- `js/ui.js` — version bumped to `1.8-Alpha`
+
+---
+
+---
+
 ## v1.7-Alpha
 *April 2026*
 

@@ -1,0 +1,46 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helper ────────────────────────────────────────────────────
+    function isAdmin() {
+      return request.auth != null
+          && request.auth.token.email == "roux.alexis25@gmail.com";
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // ── User profiles ─────────────────────────────────────────────
+    // Each user can only read and write their own document.
+    match /users/{userId} {
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
+
+      // Quiz scores — one doc per song, keyed by songId
+      match /scores/{songId} {
+        allow read, write: if isSignedIn() && request.auth.uid == userId;
+      }
+    }
+
+    // ── Leaderboard ───────────────────────────────────────────────
+    // Any authenticated user can read; each user writes only their own entry.
+    match /leaderboard/{userId} {
+      allow read:  if isSignedIn();
+      allow write: if isSignedIn() && request.auth.uid == userId;
+    }
+
+    // ── Song catalogue ────────────────────────────────────────────
+    // Any authenticated user can read songs and quiz questions.
+    // Only the admin account can create, update or delete.
+    match /songs/{songId} {
+      allow read:  if isSignedIn();
+      allow write: if isAdmin();
+
+      match /quizzes/{level} {
+        allow read:  if isSignedIn();
+        allow write: if isAdmin();
+      }
+    }
+  }
+}

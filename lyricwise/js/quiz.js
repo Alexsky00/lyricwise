@@ -27,8 +27,7 @@ function _shuffleOptions(question) {
   };
 }
 
-export function init(song, level) {
-  const questions = song.quiz?.[level];
+export function init(song, level, questions) {
   if (!questions || questions.length === 0) {
     console.error(`[quiz] No questions for ${song.id} / ${level}`);
     return false;
@@ -68,12 +67,6 @@ export function answer(optionIndex) {
   const q       = getCurrentQuestion();
   const correct = optionIndex === q.correct;
   if (correct) state.score++;
-
-  let isNewRecord = null;
-  const isLast = state.current === state.questions.length - 1;
-  if (isLast && correct) {
-    // Save when we know final score (called again in next() for last question)
-  }
 
   return { correct, feedback: q.feedback };
 }

@@ -24,7 +24,7 @@
 
 <script type="module">
   import { renderNav, renderFooter } from '../js/ui.js';
-  import { catalogue, hasQuiz } from '../data/index.js';
+  import { getCatalogue } from '../js/catalogue.js';
   import { getAllScores, resetAll } from '../js/storage.js';
   import { requireAuth } from '../js/auth.js';
 
@@ -33,6 +33,7 @@
   renderFooter();
 
   const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1'];
+  const catalogue = await getCatalogue();
 
   function render() {
     const container = document.getElementById('stats-body');
@@ -144,9 +145,9 @@
 
   render();
 
-  document.getElementById('reset-btn').addEventListener('click', () => {
+  document.getElementById('reset-btn').addEventListener('click', async () => {
     if (confirm('Reset all your quiz history? This cannot be undone.')) {
-      resetAll();
+      await resetAll();
       render();
     }
   });

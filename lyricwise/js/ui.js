@@ -4,7 +4,7 @@
 import { router } from './router.js';
 
 // ── Version ───────────────────────────────────────────────────────
-export const APP_VERSION = '1.7-Alpha';
+export const APP_VERSION = '1.9-Alpha';
 
 // ── Theme ─────────────────────────────────────────────────────────
 
@@ -71,8 +71,9 @@ export function renderNav(activePage, profile = null) {
       🎵 Lyric<span>Wise</span>
     </a>
     <div class="nav-links">
-      <a class="${activePage === 'home'    ? 'active' : ''}" href="#" onclick="event.preventDefault(); lw.go('home')">Home</a>
-      <a class="${activePage === 'stats'   ? 'active' : ''}" href="#" onclick="event.preventDefault(); lw.go('stats')">Stats</a>
+      <a class="${activePage === 'home'        ? 'active' : ''}" href="#" onclick="event.preventDefault(); lw.go('home')">Home</a>
+      <a class="${activePage === 'stats'       ? 'active' : ''}" href="#" onclick="event.preventDefault(); lw.go('stats')">Stats</a>
+      <a class="${activePage === 'leaderboard' ? 'active' : ''}" href="#" onclick="event.preventDefault(); lw.go('leaderboard')">🏆 Leaderboard</a>
       <a class="nav-cta${activePage === 'library' ? ' active' : ''}" href="#" onclick="event.preventDefault(); lw.go('library')">Browse Songs</a>
       <a class="nav-admin" href="#" onclick="event.preventDefault(); lw.go('admin')">Admin</a>
       <div style="position:relative;">

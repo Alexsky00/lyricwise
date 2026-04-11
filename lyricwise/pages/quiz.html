@@ -165,7 +165,7 @@
 <script type="module">
 import { router }                   from '../js/router.js';
 import { renderNav, launchConfetti, launchGreenSmoke, renderFooter } from '../js/ui.js';
-import { getSong, hasQuiz }         from '../data/index.js';
+import { getSong, hasQuizSync, getQuizQuestions } from '../js/catalogue.js';
 import { getScore, saveScore }      from '../js/storage.js';
 import * as Quiz                    from '../js/quiz.js';
 import { loadSpotify, seek,
@@ -179,19 +179,20 @@ const { profile: _navProfile } = await requireAuth();
 
 // ── State ─────────────────────────────────────────────────────────
 const params  = router.getParams();
-let song      = null;
-let currentLevel = null;
-let playerCollapsed = false;
-let floatMinimized  = false;
+let song             = null;
+let currentLevel     = null;
+let currentQuestions = [];
+let playerCollapsed  = false;
+let floatMinimized   = false;
 
 // ── Init ──────────────────────────────────────────────────────────
-function init() {
+async function init() {
   if (!params.songId) { router.go('library'); return; }
-  song = getSong(params.songId);
+  song = await getSong(params.songId);
   if (!song) { router.go('library'); return; }
 
   if (params.level) {
-    startQuiz(params.level);
+    await startQuiz(params.level);
   } else {
     showLevelScreen();
   }
@@ -215,7 +216,7 @@ function showLevelScreen() {
   const NAMES = { A1: 'Beginner', A2: 'Elementary', B1: 'Intermediate', B2: 'Upper Intermediate', C1: 'Advanced' };
 
   LEVELS.forEach(lv => {
-    const available = hasQuiz(song.id, lv);
+    const available = hasQuizSync(song, lv);
     const best      = getScore(song.id, lv);
     const div       = document.createElement('div');
     div.className   = `level-option${available ? '' : ' disabled'}`;
@@ -239,7 +240,7 @@ function showLevelScreen() {
       <span class="${bestClass}" id="best-${lv}">${bestLabel}</span>`;
 
     if (available) {
-      div.addEventListener('click', () => startQuiz(lv));
+      div.addEventListener('click', () => startQuiz(lv).catch(err => console.error('[quiz] startQuiz failed', err)));
     }
     container.appendChild(div);
   });
@@ -283,7 +284,7 @@ function highlightLyricsExcerpt(index) {
   const fullEl = document.getElementById('lyrics-full-text');
   if (!fullEl) return;
 
-  const questions = song.quiz?.[currentLevel] || [];
+  const questions = currentQuestions;
   const excerpt   = questions[index]?.lyrics;
   if (!excerpt) {
     fullEl.innerHTML = escLyrics(song.lyrics);
@@ -330,11 +331,14 @@ function highlightLyricsExcerpt(index) {
 }
 
 // ── Quiz ──────────────────────────────────────────────────────────
-function startQuiz(level) {
-  if (!hasQuiz(song.id, level)) return;
+async function startQuiz(level) {
+  if (!hasQuizSync(song, level)) return;
   currentLevel = level;
 
-  const ok = Quiz.init(song, level);
+  const questions = await getQuizQuestions(song.id, level);
+  currentQuestions = questions || [];
+
+  const ok = Quiz.init(song, level, currentQuestions);
   if (!ok) { router.go('library'); return; }
 
   buildLyricsDrawer();
@@ -471,7 +475,7 @@ function showScore(isNewRecord, score, total) {
 }
 
 window.retryQuiz = function() {
-  startQuiz(currentLevel);
+  startQuiz(currentLevel).catch(err => console.error('[quiz] retryQuiz failed', err));
 };
 
 // ── Player ────────────────────────────────────────────────────────

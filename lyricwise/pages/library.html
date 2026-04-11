@@ -29,7 +29,7 @@
 
 <script type="module">
   import { renderNav, renderFooter } from '../js/ui.js';
-  import { catalogue, hasQuiz } from '../data/index.js';
+  import { getCatalogue, hasQuizSync } from '../js/catalogue.js';
   import { hasAnyScore } from '../js/storage.js';
   import { router } from '../js/router.js';
   import { requireAuth } from '../js/auth.js';
@@ -41,12 +41,24 @@
   const grid = document.getElementById('songs-grid');
   const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1'];
 
+  grid.innerHTML = '<div class="library-loading">Loading…</div>';
+  const rawCatalogue = await getCatalogue();
+  grid.innerHTML = '';
+
+  // Songs without any quiz level go to the end
+  const catalogue = [
+    ...rawCatalogue.filter(s => !s.comingSoon && s.availableLevels?.length),
+    ...rawCatalogue.filter(s =>  s.comingSoon || !s.availableLevels?.length),
+  ];
+
   // Render all song cards
   catalogue.forEach(song => {
     const card = document.createElement('div');
-    card.dataset.levels = LEVELS.filter(l => hasQuiz(song.id, l)).join(' ');
+    card.dataset.levels = LEVELS.filter(l => hasQuizSync(song, l)).join(' ');
 
-    if (song.comingSoon) {
+    const isComingSoon = song.comingSoon || !song.availableLevels?.length;
+
+    if (isComingSoon) {
       card.className = 'song-card coming-soon';
       const badges = LEVELS.map(lv => `<span class="level-badge ${lv}">${lv}</span>`).join('');
       card.innerHTML = `
@@ -64,7 +76,7 @@
     card.className = 'song-card';
 
     const badges = LEVELS.map(lv => {
-      const available = hasQuiz(song.id, lv);
+      const available = hasQuizSync(song, lv);
       return `<span
         class="level-badge ${lv}${available ? '' : ' no-quiz'}"
         title="${available ? `Start ${lv} quiz` : `${lv} not available yet`}"

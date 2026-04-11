@@ -2,7 +2,6 @@
 // Firebase Authentication + Firestore user profiles.
 // All auth logic lives here — no other module touches Firebase directly.
 
-import { initializeApp }                              from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -12,21 +11,18 @@ import {
   updatePassword       as fbUpdatePassword,
   EmailAuthProvider,
   reauthenticateWithCredential,
-}                                                      from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+}                          from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import {
-  getFirestore,
   doc,
   setDoc,
   getDoc,
   updateDoc,
-}                                                      from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-import { firebaseConfig }                              from './firebase-config.js';
-import { setCurrentUserId }                            from './storage.js';
+}                          from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { app, db }                                                         from './firebase-db.js';
+import { setCurrentUserId, setCurrentUserProfile, loadScoresFromFirestore } from './storage.js';
 
 // ── Firebase init ─────────────────────────────────────────────────
-const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db   = getFirestore(app);
 
 // ── In-memory cache ───────────────────────────────────────────────
 let _user    = null;   // Firebase Auth user  (null = signed out, undefined = not yet resolved)
@@ -39,7 +35,9 @@ const _authReady = new Promise(resolve => {
     if (user) {
       _profile = await _fetchProfile(user.uid);
       setCurrentUserId(user.uid);
+      setCurrentUserProfile(_profile);
       _cacheProfile(_profile);
+      await loadScoresFromFirestore(user.uid);
     } else {
       _profile = null;
       setCurrentUserId(null);
