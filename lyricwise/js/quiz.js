@@ -13,6 +13,20 @@ let state = {
   answered: false,
 };
 
+function _shuffleOptions(question) {
+  const indices = [0, 1, 2, 3];
+  // Fisher-Yates shuffle
+  for (let i = indices.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [indices[i], indices[j]] = [indices[j], indices[i]];
+  }
+  return {
+    ...question,
+    options: indices.map(i => question.options[i]),
+    correct: indices.indexOf(question.correct),
+  };
+}
+
 export function init(song, level) {
   const questions = song.quiz?.[level];
   if (!questions || questions.length === 0) {
@@ -22,7 +36,7 @@ export function init(song, level) {
   state = {
     song,
     level,
-    questions,
+    questions: questions.map(_shuffleOptions),
     current:  0,
     score:    0,
     answered: false,

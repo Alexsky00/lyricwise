@@ -1,13 +1,3 @@
-// js/spotify-auth.js
-// Spotify OAuth 2.0 Authorization Code + PKCE (client-side only, no backend).
-//
-// SETUP:
-//   1. Go to https://developer.spotify.com/dashboard and create an app.
-//   2. In "Redirect URIs", add ONE entry for each environment:
-//        http://127.0.0.1:5500/lyricwise/pages/spotify-callback.html   ← local dev
-//        https://alexsky00.github.io/lyricwise/pages/spotify-callback.html  ← production
-//   3. That's it — all pages share the same callback URL.
-
 export const SPOTIFY_CLIENT_ID = '7ef4a246d4ab4a2ba2495d2f2e12f135';
 const SCOPES = 'user-read-private user-read-email';
 
